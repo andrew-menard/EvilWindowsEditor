@@ -1,0 +1,52 @@
+﻿<Window x:Class="EvilWindowsEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EvilWindowsEditor"
+        mc:Ignorable="d"
+        Title="Evil Overlord Content Editor" Height="750" Width="1200">
+    <Window.DataContext>
+        <local:gameDataView x:Name="GameDataViewObject" ></local:gameDataView></Window.DataContext>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
+    <Grid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open" Click="MenuItem_OpenFile"/>
+                    <MenuItem Header="_Save"/>
+                    <MenuItem Header="_Merge"/>
+                    <MenuItem Header="_Quit"/>
+                </MenuItem>
+                <MenuItem Header="_Create New Object">
+                    <MenuItem Header="Item"  IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateItem"/>
+                    <MenuItem Header="Item Type" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateItemType"/>
+                    <MenuItem Header="Stat" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateStat"/>
+                    <MenuItem Header="Stat Group" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateStatGroup"/>
+                    <MenuItem Header="Quest" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateQuest"/>
+                    <MenuItem Header="Henchman" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateHenchman"/>
+                    <MenuItem Header="Location" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateLocation"/>
+                    <MenuItem Header="NPC" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateNPC"/>
+                    <MenuItem Header="Startup Data" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateStartingCharacterInfo"/>
+                </MenuItem>
+                <MenuItem Header="_Help">
+                    <MenuItem Header="_About"/>
+                </MenuItem>
+            </Menu>
+            <StackPanel Orientation="Horizontal">
+                <TreeView MinWidth="300" ItemsSource="{Binding GameTree, Mode=OneWay}">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type local:GameTreeItem}" ItemsSource="{Binding Children, Mode=OneWay}">
+                            <TextBlock Text="{Binding Path=Name, Mode=OneWay}"  />
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+                <StackPanel Orientation="Vertical">
+                    <Label Visibility="{Binding PreLoad, Mode=OneWay, Converter={StaticResource BoolToVis} }" Content="{Binding BindingTest, Mode=OneWay}"></Label>
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>
