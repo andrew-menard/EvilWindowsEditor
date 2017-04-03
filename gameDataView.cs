@@ -4,10 +4,11 @@ using System.Linq;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
+using System.Net;
 
 namespace EvilWindowsEditor
 {
-    public class GameTreeItem
+    public class GameTreeItem : INotifyPropertyChanged
     {
         public GameTreeItem()
         {
@@ -18,6 +19,16 @@ namespace EvilWindowsEditor
         private string _name;
         public string Name { get { if (ObjectRef != null) { return ObjectRef.name; } else { return _name; } } set { _name = value; } }
         public ObservableCollection<GameTreeItem> Children { get; set; }
+        //Implementing INotifyPropertyChanged interface
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NotifyPropertyChanged(String info)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(info));
+            }
+        }
     }
 
     //This class holds the data, and holds what object is selected etc, so that the various controls can bind to it.
@@ -25,30 +36,30 @@ namespace EvilWindowsEditor
     //Uses the INotifyPropertyChanged interface to let bound form elements know when relevant things have changed.
     public class gameDataView : INotifyPropertyChanged
     {
+        private GameTreeItem selectedGameTreeItem = null;
         private ObservableCollection<GameTreeItem> gameTree = null;
         private gamedataObject gameDataObj = null; //This is the currently selected object, or null if none is selected.
         private gamedataObject _selectedQuestStep = null; //If a quest is selected, this is null if in flowchart view or is the selected step that you are focusing on
         private gamedataObject _selectedQuestStepChoice = null; //If a quest is selected and you have a selected quest step, this is the selected step's choice that you are focusing on
         public Dictionary<string, gamedataObject> allObjects; //Dict for looking up by objects by uuid
-        public ObservableCollection<gamedataObject> locations; //Location list, for binding combo boxes for item grants and requirements
+        private ObservableCollection<gamedataObject> locations; //Location list, for binding combo boxes 
+        public ObservableCollection<gamedataObject> Locations { get => locations; set { locations = value; NotifyPropertyChanged("Locations"); } }
         public ObservableCollection<gamedataObject> henchmen; //Henchmen list, for binding combo boxes for item grants and requirements
         public ObservableCollection<gamedataObject> items; //Items list, for binding combo boxes for item grants and requirements
-        public ObservableCollection<gamedataObject> itemTypes; //Item types list, for binding combo box on the item screen
+        private ObservableCollection<gamedataObject> itemTypes; //Item types list, for binding combo box on the item screen
+        public ObservableCollection<gamedataObject> ItemTypes { get => itemTypes; set { itemTypes = value; NotifyPropertyChanged("ItemTypes"); } }
         public ObservableCollection<gamedataObject> stats; //Stats list, for binding combo boxes for stat requirements
-        public ObservableCollection<gamedataObject> statGroups; //Stat Groups list, for binding combo boxes for stat group
+        private ObservableCollection<gamedataObject> statGroups; //Stat Groups list, for binding combo boxes for stat group
+        public ObservableCollection<gamedataObject> StatGroups { get => statGroups; set { statGroups = value; NotifyPropertyChanged("StatGroups"); } }
         public ObservableCollection<gamedataObject> questSteps; //List of steps on the current quest, for binding combo boxes for quest choices.
         public ObservableCollection<gamedataObject> quests; //List of quests, for binding combo boxes for quests.
         public ObservableCollection<gamedataObject> npcs; //List of npcs, for binding combo boxes for npcs.
         Dictionary<String, List<gamedataObject>> elementsByType; //For elements that show up in the tree view only.
         Dictionary<String, List<gamedataObject>> allElementsByType; //General set of everything
 
-        //Bah.  Refactor everything that uses these to be back on MainForm, so we can just have a pointer to that and get better separation.
-        //public TreeView treeViewPanel;
-        //public GridView<gamedataObject> questStepChoicesGridRef;
         private bool _postLoad = false;
-        public bool PostLoad { get { return _postLoad; } set { _postLoad = value;  if (value==true) bindingTest = "CHANGED"; NotifyPropertyChanged("BindingTest"); NotifyPropertyChanged("PostLoad"); NotifyPropertyChanged("PreLoad"); } }
-        public bool PreLoad { get { return !_postLoad; }}
-        //public MainForm theForm;
+        public bool PostLoad { get { return _postLoad; } set { _postLoad = value; NotifyPropertyChanged("pickNewObjectVisible"); NotifyPropertyChanged("PostLoad"); NotifyPropertyChanged("PreLoad"); } }
+        public bool PreLoad { get { return !_postLoad; } }
         private gamedata _root;
         public gamedata root
         {
@@ -69,42 +80,43 @@ namespace EvilWindowsEditor
                     root.Items = new gamedataObject[0];
                 }
                 locations.Clear();
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("LocationData")))
+                locations.Add(null); //Empty value so you can "unselect" things in the combo boxes
+                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("LocationData") && iter.deleted=="False"))
                 {
                     locations.Add(gameObject);
                 }
                 henchmen.Clear();
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("HenchmanData")))
+                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("HenchmanData") && iter.deleted == "False"))
                 {
                     henchmen.Add(gameObject);
                 }
                 items.Clear();
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("ItemData")))
+                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("ItemData") && iter.deleted == "False"))
                 {
                     items.Add(gameObject);
                 }
                 itemTypes.Clear();
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("ItemTypeData")))
+                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("ItemTypeData") && iter.deleted == "False"))
                 {
                     itemTypes.Add(gameObject);
                 }
                 stats.Clear();
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StatData")))
+                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StatData") && iter.deleted == "False"))
                 {
                     stats.Add(gameObject);
                 }
                 statGroups.Clear();
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StatGroupData")))
+                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StatGroupData") && iter.deleted == "False"))
                 {
                     statGroups.Add(gameObject);
                 }
                 quests.Clear();
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestData")))
+                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestData") && iter.deleted == "False"))
                 {
                     quests.Add(gameObject);
                 }
                 npcs.Clear();
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("NPCData")))
+                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("NPCData") && iter.deleted == "False"))
                 {
                     npcs.Add(gameObject);
                 }
@@ -135,9 +147,6 @@ namespace EvilWindowsEditor
                     }
                     allElementsByType[gameObject.@class].Add(gameObject);
                 }
-                //treeViewPanel.SuspendLayout();
-                //treeViewPanel.Invalidate();
-                //treeItemCollection.Clear();
                 GameTree.Clear();
                 var elementList = new List<string> { "ItemTypeData", "ItemData", "StatData", "QuestData", "StatGroupData", "HenchmanData", "LocationData", "NPCData", "StartingCharacterInfoData" };
                 foreach (String elementClass in elementList)
@@ -153,15 +162,11 @@ namespace EvilWindowsEditor
                             {
                                 GameTreeItem childNode = new GameTreeItem() { ObjectRef = element };
                                 classNode.Children.Add(childNode);
-                                //childNode.Parent = classNode;
-                                //childNode.Key = element.uuid;
                             }
                         }
                     }
                     GameTree.Add(classNode);
-                    //treeItemCollection.Add(classNode);
                 }
-                //                treeViewPanel.ResumeLayout();*/
                 PostLoad = true;
                 NotifyPropertyChanged("gameTree");
             }
@@ -201,7 +206,7 @@ namespace EvilWindowsEditor
                         //Populate the list of quest stepchoices.  Comes after the above which might be fixing a quest step so it gets found here.
                         selectedQuestStepChoicesObservable.Clear();
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
-                                                                                               && (iter.deleted==null || iter.deleted.Equals("False"))   
+                                                                                               && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                && iter.stepID.Equals(_selectedQuestStep.uuid)))
                         {
                             selectedQuestStepChoicesObservable.Add(gameObject);
@@ -311,30 +316,7 @@ namespace EvilWindowsEditor
             }
             else return null;
         }
-/*        public gamedataObject GetStatByName(string name)
-        {
-            //This is fine as long as we only have a few stats; if we start having lots, build a dict of them.
-            //And yes, don't have two stats with the same name, you will make the combo box sad..
-            //Stupid combo box cells in tables insist on indexing by the text rather than the key.
-            foreach (gamedataObject stat in stats)
-            {
-                if (stat.name.Equals(name))
-                    return stat;
-            }
-            return null;
-        }
-        public gamedataObject GetStepByName(string name)
-        {
-            //This is fine as long as we only have a few stats; if we start having lots, build a dict of them.
-            //And yes, don't have two stats with the same name, you will make the combo box sad..
-            //Stupid combo box cells in tables insist on indexing by the text rather than the key.
-            foreach (gamedataObject step in selectedQuestStepsObservable)
-            {
-                if (step.name.Equals(name))
-                    return step;
-            }
-            return null;
-        }*/
+
         public gamedataObject gameData
         {
             get { return gameDataObj; }
@@ -375,7 +357,7 @@ namespace EvilWindowsEditor
                         questStatRequirements.Clear();
                         questStatRequirementsObservable.Clear();
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStatRequirementData")
-                                                                                               && (iter.deleted ==null || iter.deleted.Equals("False"))
+                                                                                               && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                && iter.questID.Equals(gameDataObj.uuid)))
                         {
                             questStatRequirements.Add(gameObject);
@@ -397,7 +379,7 @@ namespace EvilWindowsEditor
                         {
                             selectedQuestStepsObservable.Add(gameObject);
                         }
-                       // theForm.updateFlowchartPanel();
+                        // theForm.updateFlowchartPanel();
                     }
                     OnGameDataChanged(EventArgs.Empty);
                 }
@@ -445,8 +427,8 @@ namespace EvilWindowsEditor
             NotifyPropertyChanged("cooldownTimer");
             NotifyPropertyChanged("questStepChoiceDataVisible");
             //theForm.updateDescriptionAndWebView(this.description, DescriptionSelector.Description);
-           // theForm.updateDescriptionAndWebView(this.questPreDescription, DescriptionSelector.QuestPreDescription);
-           // theForm.updateDescriptionAndWebView(this.stepDescription, DescriptionSelector.QuestStepDescription);
+            // theForm.updateDescriptionAndWebView(this.questPreDescription, DescriptionSelector.QuestPreDescription);
+            // theForm.updateDescriptionAndWebView(this.stepDescription, DescriptionSelector.QuestStepDescription);
             NotifyPropertyChanged(null); //This supposedly forces a notify on all properties, but appears not to work, possibly due to old version of .net?
             /*if (gameDataObj != null)
             {
@@ -473,7 +455,7 @@ namespace EvilWindowsEditor
             }
         }
 
-        public bool pickNewObjectVisible { get { return gameDataObj == null; } }
+        public bool pickNewObjectVisible { get { return (gameDataObj == null) && PostLoad; } }
 
         public string name
         {
@@ -497,6 +479,7 @@ namespace EvilWindowsEditor
                 {
                     gameDataObj.name = value;
                     gameDataObj.NotifyPropertyChanged("name");
+                    SelectedGameTreeItem.NotifyPropertyChanged("Name");
                     updateObjectTreeForNameChange();
                 }
             }
@@ -549,12 +532,14 @@ namespace EvilWindowsEditor
         public string comment { get { if (gameDataObj == null) { return ""; } else return gameDataObj.comment; } set { if (gameDataObj != null) gameDataObj.comment = value; } }
         public string icon { get { if (gameDataObj == null) { return ""; } else return gameDataObj.icon; } set { if (gameDataObj != null) gameDataObj.icon = value; } }
 
-        public string description { get { if (gameDataObj == null) { return ""; } else return gameDataObj.description; } set { if (gameDataObj !=null) gameDataObj.description = value; } }
-        public string questPreDescription { get { if (gameDataObj == null) { return ""; } else return gameDataObj.questPreDescription; } set { if (gameDataObj != null) gameDataObj.questPreDescription = value; } }
+//        public string description { get { if (gameDataObj == null || gameDataObj.description == null) { return ""; } else return gameDataObj.description; } set { if (gameDataObj != null) gameDataObj.description = value; } }
+        public string Description { get { if (gameDataObj == null || gameDataObj.description == null) { return ""; } else return WebUtility.HtmlDecode(gameDataObj.description); } set { if (gameDataObj != null) gameDataObj.description = WebUtility.HtmlEncode(value); } }
+
+        public string questPreDescription { get { if (gameDataObj == null) { return ""; } else return WebUtility.HtmlDecode(gameDataObj.questPreDescription); } set { if (gameDataObj != null) gameDataObj.questPreDescription = WebUtility.HtmlEncode(value); } }
         public string stepDescription
         {
-            get { if (gameDataObj == null || SelectedQuestStep == null) { return ""; } else return SelectedQuestStep.description; }
-            set { if (SelectedQuestStep != null) SelectedQuestStep.description = value; }
+            get { if (gameDataObj == null || SelectedQuestStep == null) { return ""; } else return WebUtility.HtmlDecode(SelectedQuestStep.description); }
+            set { if (SelectedQuestStep != null) SelectedQuestStep.description = WebUtility.HtmlEncode(value); }
         }
         public bool descriptionVisible
         {
@@ -611,6 +596,54 @@ namespace EvilWindowsEditor
                     { gameDataObj.oneTimeQuest = "True"; }
                     else
                     { gameDataObj.oneTimeQuest = "False"; }
+                }
+            }
+        }
+        public bool? displayedOnSidebar
+        {
+            get
+            {
+                if (gameDataObj == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return gameDataObj.displayedOnSidebar == "True";
+                }
+            }
+            set
+            {
+                if (gameDataObj != null)
+                {
+                    if (value == true)
+                    { gameDataObj.displayedOnSidebar = "True"; }
+                    else
+                    { gameDataObj.displayedOnSidebar = "False"; }
+                }
+            }
+        }
+        public bool? displayedOnMainStatPage
+        {
+            get
+            {
+                if (gameDataObj == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return gameDataObj.displayedOnMainStatPage == "True";
+                }
+            }
+            set
+            {
+                if (gameDataObj != null)
+                {
+                    if (value == true)
+                    { gameDataObj.displayedOnMainStatPage = "True"; }
+                    else
+                    { gameDataObj.displayedOnMainStatPage = "False"; }
                 }
             }
         }
@@ -693,15 +726,13 @@ namespace EvilWindowsEditor
         }
         public string requiredLocation
         {
-            get { if (gameDataObj == null || gameDataObj.requiredLocation == null || gameDataObj.requiredLocation.First() == null) { return ""; } else return gameDataObj.requiredLocation.First().Value; }
+            get { if (gameDataObj == null) { return ""; } else return gameDataObj.requiredLocationID; }
             set
             {
-                if (gameDataObj.requiredLocation == null)
-                {
-                    gameDataObj.requiredLocation = new gamedataObjectRequiredLocation[1];
-                    gameDataObj.requiredLocation[0] = new gamedataObjectRequiredLocation();
-                }
-                gameDataObj.requiredLocation.First().Value = value;
+                if (value == null)
+                    gameDataObj.requiredLocationID = "";
+                else
+                    gameDataObj.requiredLocationID = value;
             }
         }
         public string startingLocation
@@ -770,6 +801,14 @@ namespace EvilWindowsEditor
                 gameDataObj.itemTypeID = value;
             }
         }
+        public string statGroup
+        {
+            get { if (gameDataObj == null) { return ""; } else return gameDataObj.statGroupID; }
+            set
+            {
+                gameDataObj.statGroupID = value;
+            }
+        }
         public bool itemTypeVisible
         {
             get
@@ -781,12 +820,23 @@ namespace EvilWindowsEditor
                 { return false; }
             }
         }
-        public bool statGroupVisible
+        public bool statVisible
         {
             get
             {
                 if (gameDataObj == null) { return false; }
                 if (gameDataObj.@class == "StatData")
+                { return true; }
+                else
+                { return false; }
+            }
+        }
+        public bool statGroupVisible
+        {
+            get
+            {
+                if (gameDataObj == null) { return false; }
+                if (gameDataObj.@class == "StatGroupData")
                 { return true; }
                 else
                 { return false; }
@@ -1060,11 +1110,6 @@ namespace EvilWindowsEditor
             //This sets the newly created object as the selected object, rebuilds the secondary items that depend on it,
             //and fires all the relevant change notifications
             bool foundTreeItem = false;
-            /*TreeItem childNode = new TreeItem();
-            childNode.Tag = newObj;
-            childNode.Text = newObj.name;
-            childNode.Key = newObj.uuid;
-            treeViewPanel.SuspendLayout();*/
             GameTreeItem childNode = new GameTreeItem() { ObjectRef = newObj };
             foreach (GameTreeItem iter in GameTree)
             {
@@ -1072,9 +1117,6 @@ namespace EvilWindowsEditor
                 {
                     foundTreeItem = true;
                     iter.Children.Add(childNode);
-//                    childNode.Parent = iter;
-//                    iter.Expanded = true;
-//                    treeViewPanel.RefreshItem(iter);
                     break;
                 }
             }
@@ -1083,11 +1125,8 @@ namespace EvilWindowsEditor
                 GameTreeItem classNode = new GameTreeItem() { Name = objectType, Children = { childNode } };
                 GameTree.Add(classNode);
             }
-            //Really should figure out how to select the new node in the tree here.  Sadly, treeViewPanel.SelectedItem 
-            //doesn't seem to actually work; there appears to be a bug in the underlying code.  There is a bug in ETO
-            //for fixing treeViews, so with luck they'll work in some future version..
-            //NotifyPropertyChanged("GameTree");
-            gameData = newObj;
+            //gameData = newObj;
+            SelectedGameTreeItem = childNode;
         }
         public void addNewHenchmanStat()
         {
@@ -1410,9 +1449,23 @@ namespace EvilWindowsEditor
                 }
             }
         }
-
-        public string BindingTest { get => bindingTest; set => bindingTest = value; }
+        
         public ObservableCollection<GameTreeItem> GameTree { get => gameTree; set => gameTree = value; }
+        public GameTreeItem SelectedGameTreeItem
+        {
+            get => selectedGameTreeItem;
+            set {
+                selectedGameTreeItem = value;
+                if (value == null)
+                {
+                    gameData = null;
+                }
+                else
+                {
+                    gameData = value.ObjectRef;
+                }
+            }
+        }
 
         private Boolean canDeleteSelectedObject()
         {
@@ -1467,22 +1520,25 @@ namespace EvilWindowsEditor
         }
         public void deleteObject(gamedataObject objToDelete)
         {
+            //If selected in the tree view, unselect it
+            if (SelectedGameTreeItem.ObjectRef.Equals(objToDelete))
+            {
+                SelectedGameTreeItem = null;
+            }
             //Deletion process: flag object deleted
             objToDelete.deleted = "True";
             //Remove object from tree view (if relevant)
-/*            foreach (TreeItem node in treeItemCollection)
+            foreach (GameTreeItem node in GameTree)
             {
-                foreach (TreeItem childnode in node.Children)
+                foreach (GameTreeItem childnode in node.Children)
                 {
-                    if ((childnode.Key).Equals(objToDelete.uuid))
+                    if ((childnode.ObjectRef).Equals(objToDelete))
                     {
                         node.Children.Remove(childnode);
-                        treeViewPanel.RefreshData();
-                        treeViewPanel.Invalidate();
                         break;
                     }
                 }
-            }*/
+            }
             //Remove object from any relevant combo boxes
             if (objToDelete.@class.Equals("ItemTypeData"))
             {
@@ -1543,7 +1599,7 @@ namespace EvilWindowsEditor
             _selectedQuestStepChoiceHenchmanGrantsObservable = new ObservableCollection<gamedataObject>();
             _selectedQuestStepsObservable = new ObservableCollection<gamedataObject>();
 			allObjects = new Dictionary<string, gamedataObject>();
-			itemTypes = new ObservableCollection<gamedataObject>();
+			ItemTypes = new ObservableCollection<gamedataObject>();
             itemTypes.OrderBy(g => g.name);
             stats = new ObservableCollection<gamedataObject>();
             stats.OrderBy(g => g.name);
@@ -1553,7 +1609,7 @@ namespace EvilWindowsEditor
             henchmen.OrderBy(g => g.name);
             items = new ObservableCollection<gamedataObject>();
             items.OrderBy(g => g.name);
-            statGroups = new ObservableCollection<gamedataObject>();
+            StatGroups = new ObservableCollection<gamedataObject>();
             statGroups.OrderBy(g => g.name);
             quests = new ObservableCollection<gamedataObject>();
             quests.OrderBy(g => g.name);
@@ -1561,7 +1617,6 @@ namespace EvilWindowsEditor
             npcs.OrderBy(g => g.name);
             elementsByType = new Dictionary<string, List<gamedataObject>>();
 			allElementsByType = new Dictionary<string, List<gamedataObject>>();
-			//treeItemCollection = new TreeItemCollection();
         }
         //Implementing INotifyPropertyChanged interface
         public event PropertyChangedEventHandler PropertyChanged;
@@ -1573,8 +1628,6 @@ namespace EvilWindowsEditor
                 PropertyChanged(this, new PropertyChangedEventArgs(info));
             }
         }
-
-        private string bindingTest = "THIS IS A BINDING TEST";
     }
 
 

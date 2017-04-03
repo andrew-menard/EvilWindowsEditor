@@ -80,6 +80,21 @@ public partial class gamedataObject: INotifyPropertyChanged
         }
     }
     [XmlIgnore]
+    public string requiredLocationID
+    {
+        get { if (requiredLocation == null || requiredLocation.Length == 0) return ""; return requiredLocation[0].Value; }
+        set
+        {
+            if (requiredLocation == null)
+            {
+                requiredLocation = new gamedataObjectRequiredLocation[1];
+                requiredLocation[0] = new gamedataObjectRequiredLocation();
+                requiredLocation[0].@class = "UUID";
+            }
+            requiredLocation[0].Value = value;
+        }
+    }
+    [XmlIgnore]
     public string questStepChoiceID
     {
         get { if (questStepChoice == null || questStepChoice.Length == 0) return ""; return questStepChoice[0].Value; }

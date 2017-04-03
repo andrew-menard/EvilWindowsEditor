@@ -21,31 +21,103 @@
                     <MenuItem Header="_Quit"/>
                 </MenuItem>
                 <MenuItem Header="_Create New Object">
-                    <MenuItem Header="Item"  IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateItem"/>
-                    <MenuItem Header="Item Type" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateItemType"/>
-                    <MenuItem Header="Stat" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateStat"/>
-                    <MenuItem Header="Stat Group" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateStatGroup"/>
-                    <MenuItem Header="Quest" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateQuest"/>
-                    <MenuItem Header="Henchman" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateHenchman"/>
-                    <MenuItem Header="Location" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateLocation"/>
-                    <MenuItem Header="NPC" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateNPC"/>
-                    <MenuItem Header="Startup Data" IsEnabled="{Binding AfterLoad, Mode=OneWay}" Click="MenuItem_CreateStartingCharacterInfo"/>
+                    <MenuItem Header="Item"  IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateItem"/>
+                    <MenuItem Header="Item Type" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateItemType"/>
+                    <MenuItem Header="Stat" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateStat"/>
+                    <MenuItem Header="Stat Group" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateStatGroup"/>
+                    <MenuItem Header="Quest" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateQuest"/>
+                    <MenuItem Header="Henchman" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateHenchman"/>
+                    <MenuItem Header="Location" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateLocation"/>
+                    <MenuItem Header="NPC" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateNPC"/>
+                    <MenuItem Header="Startup Data" IsEnabled="{Binding canCreateStartingCharacterInfo, Mode=OneWay}" Click="MenuItem_CreateStartingCharacterInfo"/>
                 </MenuItem>
                 <MenuItem Header="_Help">
                     <MenuItem Header="_About"/>
                 </MenuItem>
             </Menu>
             <StackPanel Orientation="Horizontal">
-                <TreeView MinWidth="300" ItemsSource="{Binding GameTree, Mode=OneWay}">
+                <local:TreeViewEx MinWidth="300" ItemsSource="{Binding GameTree, Mode=OneWay}" SelectedItem="{Binding SelectedGameTreeItem, Mode=TwoWay}">
                     <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate DataType="{x:Type local:GameTreeItem}" ItemsSource="{Binding Children, Mode=OneWay}">
                             <TextBlock Text="{Binding Path=Name, Mode=OneWay}"  />
                         </HierarchicalDataTemplate>
                     </TreeView.ItemTemplate>
-                </TreeView>
-                <StackPanel Orientation="Vertical">
-                    <Label Visibility="{Binding PreLoad, Mode=OneWay, Converter={StaticResource BoolToVis} }" Content="{Binding BindingTest, Mode=OneWay}"></Label>
-                </StackPanel>
+                </local:TreeViewEx>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <StackPanel MinWidth="880" Orientation="Vertical">
+                    <Label Visibility="{Binding PreLoad, Mode=OneWay, Converter={StaticResource BoolToVis} }" Content="Load a game data file"></Label>
+                    <Label Visibility="{Binding pickNewObjectVisible, Mode=OneWay, Converter={StaticResource BoolToVis} }" Content="Pick a data item"></Label>
+                    <Button HorizontalAlignment="Right" Click="DeleteButton_Click" ToolTip="{Binding deleteObjectButtonTooltip, Mode=OneWay}">
+                        <Label>Delete this Item</Label>
+                    </Button>
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding nameVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <Label>Name:</Label>
+                        <TextBox Width="500" Text="{Binding name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </StackPanel>
+                    <DockPanel  Visibility="{Binding nameVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <Label DockPanel.Dock="Left">Comment:</Label>
+                        <TextBox HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Height="100" Text="{Binding comment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </DockPanel>
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding iconVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <Label>Image:</Label>
+                        <TextBox Width="500" Text="{Binding icon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                    </StackPanel>
+                        <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding descriptionVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <StackPanel Orientation="Vertical">
+                            <DockPanel Visibility="{Binding descriptionVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                <Label DockPanel.Dock="Left">Description:</Label>
+                                <TextBox Height="100" TextWrapping="Wrap" Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            </DockPanel>
+                            <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding descriptionVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                <WebBrowser HorizontalAlignment="Stretch" Height="100" local:BrowserBehavior.Html="{Binding Description, Mode=OneWay}" Visibility="{Binding descriptionVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"></WebBrowser>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                        <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding descriptionVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <StackPanel Orientation="Vertical">
+                                <DockPanel Visibility="{Binding questVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                    <Label DockPanel.Dock="Left">Description Seen Before Accepting Quest:</Label>
+                                    <TextBox HorizontalAlignment="Stretch" Height="100" Text="{Binding questPreDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                </DockPanel>
+                                <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding questVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                    <WebBrowser HorizontalAlignment="Stretch" Height="100" local:BrowserBehavior.Html="{Binding questPreDescription, Mode=OneWay}" Visibility="{Binding questVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"></WebBrowser>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                        <CheckBox Content="Equippable" IsChecked="{Binding equippable, Mode=TwoWay}" Visibility="{Binding equippableVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
+                        <CheckBox Content="Quest is one-time only" IsChecked="{Binding oneTimeQuest, Mode=TwoWay}" Visibility="{Binding questVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
+                        <CheckBox Content="Stats of this group are displayed on sidebar" IsChecked="{Binding displayedOnSidebar, Mode=TwoWay}" Visibility="{Binding statGroupVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
+                        <CheckBox Content="Stats of this group are displayed on main stat page" IsChecked="{Binding displayedOnMainStatPage, Mode=TwoWay}" Visibility="{Binding statGroupVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding questVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>Cooldown timer til you can run quest again (in minutes):</Label>
+                            <TextBox Width="50" Text="{Binding cooldownTimer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding itemTypeVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>Item Type:</Label>
+                            <ComboBox Width="150" ItemsSource="{Binding ItemTypes, Mode=OneWay}"  DisplayMemberPath="Name" 
+                                      SelectedValuePath="uuid"
+                                      IsSynchronizedWithCurrentItem="True" 
+                                      SelectedValue="{Binding itemType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding questVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>Required Location:</Label>
+                            <ComboBox Width="150" ItemsSource="{Binding Locations, Mode=OneWay}"  DisplayMemberPath="Name" 
+                                      SelectedValuePath="uuid"
+                                      IsSynchronizedWithCurrentItem="True" 
+                                      SelectedValue="{Binding requiredLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding statVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>Stat Group:</Label>
+                            <ComboBox Width="150" ItemsSource="{Binding StatGroups, Mode=OneWay}"  DisplayMemberPath="Name" 
+                                      SelectedValuePath="uuid"
+                                      IsSynchronizedWithCurrentItem="True" 
+                                      SelectedValue="{Binding statGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
             </StackPanel>
         </DockPanel>
     </Grid>

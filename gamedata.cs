@@ -51,6 +51,8 @@ public partial class gamedataObject {
 
     private string deletedField; //Effectively a boolean
 
+    private string displayedOnSidebarField; //Effectively a boolean
+    private string displayedOnMainStatPageField; //Effectively a boolean
     private string oneTimeQuestField; //Effectively a bool
 
     private string cooldownTimerField; //Minutes until quest available again for timed quests
@@ -248,6 +250,48 @@ public partial class gamedataObject {
         set
         {
             this.deletedField = value;
+        }
+    }
+    /// <remarks/>
+    [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+    public string displayedOnSidebar
+    {
+        get
+        {
+            if (displayedOnSidebarField == null || displayedOnSidebarField.Equals("false"))
+            {
+                return "False";
+            }
+            else if (displayedOnSidebarField.Equals("true"))
+            {
+                return "True";
+            }
+            return this.displayedOnSidebarField;
+        }
+        set
+        {
+            this.displayedOnSidebarField = value;
+        }
+    }
+    /// <remarks/>
+    [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+    public string displayedOnMainStatPage
+    {
+        get
+        {
+            if (displayedOnMainStatPageField == null || displayedOnMainStatPageField.Equals("false"))
+            {
+                return "False";
+            }
+            else if (displayedOnMainStatPageField.Equals("true"))
+            {
+                return "True";
+            }
+            return this.displayedOnMainStatPageField;
+        }
+        set
+        {
+            this.displayedOnMainStatPageField = value;
         }
     }
     /// <remarks/>
