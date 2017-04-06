@@ -48,13 +48,14 @@ public partial class gamedataObject {
     private string uuidField;
     
     private string valueField;
+    private string alternateBackgroundField;
 
     private string deletedField; //Effectively a boolean
 
     private string displayedOnSidebarField; //Effectively a boolean
     private string displayedOnMainStatPageField; //Effectively a boolean
     private string oneTimeQuestField; //Effectively a bool
-
+    private string questIsForceGrantedField; //Effectively a bool
     private string cooldownTimerField; //Minutes until quest available again for timed quests
     
     private gamedataObjectItem[] itemField;
@@ -155,7 +156,20 @@ public partial class gamedataObject {
             this.iconField = value;
         }
     }
-    
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+    public string alternateBackground
+    {
+        get
+        {
+            return this.alternateBackgroundField;
+        }
+        set
+        {
+            this.alternateBackgroundField = value;
+        }
+    }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
     public string giveItemNumber {
@@ -313,6 +327,27 @@ public partial class gamedataObject {
         set
         {
             this.oneTimeQuestField = value;
+        }
+    }
+    /// <remarks/>
+    [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+    public string questIsForceGranted
+    {
+        get
+        {
+            if (questIsForceGrantedField == null || questIsForceGrantedField.Equals("false"))
+            {
+                return "False";
+            }
+            else if (questIsForceGrantedField.Equals("true"))
+            {
+                return "True";
+            }
+            return this.questIsForceGrantedField;
+        }
+        set
+        {
+            this.questIsForceGrantedField = value;
         }
     }
     /// <remarks/>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -110,29 +111,71 @@ namespace EvilWindowsEditor
         public MainWindow()
         {
             InitializeComponent();
+            GameDataViewObject.PropertyChanged += GameDataViewObject_PropertyChanged;
         }
 
+        private void GameDataViewObject_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            //This feels dirty, as it kind of violates the proper separation of data from UI
+            if (e.PropertyName != null && e.PropertyName.Equals("SelectedObject"))
+            {
+                if ((sender as gameDataView).gameData != null && (sender as gameDataView).gameData.@class.Equals("QuestData"))
+                {
+                    (FindName("FlowchartPanel") as QuestFlowchart).BuildFlowchart();
+                }
+            }
+        }
+
+        private void MenuItem_About(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(this, "This is where conspiracies are made...");
+        }
+        private void MenuItem_Quit(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+        private void MenuItem_SaveFile(object sender, RoutedEventArgs e)
+        {
+            var filterString = new string[] { "*.xml" };
+            var sfDialog = new SaveFileDialog()
+            {
+                DefaultExt = "xml",
+                Title = "Select game data file to save"
+            };
+            if (sfDialog.ShowDialog(this) == true)
+            {
+                FileStream saveFileStream = null;
+                if (File.Exists(sfDialog.FileName))
+                {
+                    saveFileStream = File.Open(sfDialog.FileName, FileMode.Truncate);
+                }
+                else
+                {
+                    saveFileStream = File.Open(sfDialog.FileName, FileMode.OpenOrCreate);
+                }
+                if (saveFileStream != null)
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(gamedata));
+                    serializer.Serialize(saveFileStream, GameDataViewObject.root);
+                    saveFileStream.Dispose();
+                }
+            }
+            return;
+        }
         private void MenuItem_OpenFile(object sender, RoutedEventArgs e)
         {
-
             var ofDialog = new OpenFileDialog()
             {
                 Title = "Select game data file to Load",
                 DefaultExt = ".xml",
-                //                 Filter = ,
-                //                Filters = { new FileDialogFilter("XML (.xml)", ".xml") }
             };
             bool? dialogResult = ofDialog.ShowDialog(this);
             if (dialogResult == true)
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(gamedata));
                 XmlReader reader = XmlReader.Create(ofDialog.FileName);
-                //objectTree.SuspendLayout(); //When the number of objects gets large, redrawing the object tree once per item will get slow, so we turn off redraws when loading things.
                 GameDataViewObject.root = (gamedata)serializer.Deserialize(reader);
                 reader.Dispose();
-                //objectTree.RefreshData(); //Required to make the object tree recognize child nodes when a top level node is added.
-                //objectTree.ResumeLayout(); //Turn redraws back on.
-                //afterLoad = true;
             }
         }
 
@@ -172,10 +215,194 @@ namespace EvilWindowsEditor
         {
             GameDataViewObject.addNewObject("StartingCharacterInfo");
         }
-
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             GameDataViewObject.deleteSelectedObject();
+        }
+        private void DeleteSelectedQuestStepButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.deleteObject(GameDataViewObject.SelectedQuestStep);
+        }
+        private void AddHenchmanStatButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewHenchmanStat();
+        }
+        private void DeleteSelectedHenchmanStatButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("HenchmanStatsGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+        private void AddItemStatModifierButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewItemStatModifier();
+        }
+        private void DeleteSelectedItemStatModifierButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("ItemStatModifierGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+        private void AddCharacterStartingStatModifierButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewStartingCharacterInfoStatModifier();
+        }
+        private void DeleteSelectedCharacterStartingStatModifierButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("CharacterStartingStatModifierGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+        private void AddQuestStatRequirementButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewQuestStatRequirement();
+        }
+        private void DeleteSelectedQuestStatRequirementButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStatRequirementGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+        private void AddQuestStepItemGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewQuestStepItemGrant();
+        }
+        private void DeleteSelectedQuestStepItemGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStepItemGrantGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+
+        private void AddQuestStepStatGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewQuestStepStatGrant();
+        }
+        private void DeleteSelectedQuestStepStatGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStepStatGrantGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+
+        private void AddQuestStepHenchmanGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewQuestStepHenchmanGrant();
+        }
+        private void DeleteSelectedQuestStepHenchmanGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStepHenchmanGrantGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+        private void AddQuestStepChoiceButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewQuestStepChoice();
+        }
+        private void AddNewQuestStepToChoiceButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStepChoiceGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.addNewQuestStepToChoice(selected as gamedataObject);
+            }
+        }
+        private void DeleteSelectedQuestStepChoiceButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStepChoiceGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+
+        private void AddQuestStepChoiceStatRequirementButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewQuestStepChoiceStatRequirement();
+        }
+        private void DeleteSelectedQuestStepChoiceStatRequirementButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStepChoiceStatRequirementGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+        private void AddQuestStepChoiceStatGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewQuestStepChoiceStatGrant();
+        }
+        private void DeleteSelectedQuestStepChoiceStatGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStepChoiceStatGrantGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+        private void AddQuestStepChoiceItemGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewQuestStepChoiceItemGrant();
+        }
+        private void DeleteSelectedQuestStepChoiceItemGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStepChoiceItemGrantGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+        private void AddQuestStepChoiceHenchmanGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewQuestStepChoiceHenchmanGrant();
+        }
+        private void DeleteSelectedQuestStepChoiceHenchmanGrantButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStepChoiceHenchmanGrantGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
+        private void ReturnToFlowchartButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.ReturnToFlowchartView();
+        }
+        private void FlowchartVisibilityChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+
+            QuestFlowchart qf = sender as QuestFlowchart;
+            if (e.NewValue as bool? == true)
+            {
+                qf.BuildFlowchart();
+            }
         }
     }
 

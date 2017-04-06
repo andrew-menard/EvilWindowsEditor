@@ -16,7 +16,6 @@ C:\Users\armenard\documents\visual studio 2017\Projects\EvilWindowsEditor\EvilWi
 C:\Users\Owner\Documents\GitHub\EvilWindowsEditor\bin\Debug\EvilWindowsEditor.exe.config
 C:\Users\Owner\Documents\GitHub\EvilWindowsEditor\bin\Debug\EvilWindowsEditor.exe
 C:\Users\Owner\Documents\GitHub\EvilWindowsEditor\bin\Debug\EvilWindowsEditor.pdb
-C:\Users\Owner\Documents\GitHub\EvilWindowsEditor\obj\Debug\EvilWindowsEditor.csprojResolveAssemblyReference.cache
 C:\Users\Owner\Documents\GitHub\EvilWindowsEditor\obj\Debug\MainWindow.g.cs
 C:\Users\Owner\Documents\GitHub\EvilWindowsEditor\obj\Debug\App.g.cs
 C:\Users\Owner\Documents\GitHub\EvilWindowsEditor\obj\Debug\GeneratedInternalTypeHelper.g.cs

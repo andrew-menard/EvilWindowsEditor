@@ -8,13 +8,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     {
         uuid = Guid.NewGuid().ToString();
     }
-
-/*    [XmlIgnore]
-	public string StatValue
-	{
-		get { return value; }
-		set { name = value; NotifyPropertyChanged("StatValue"); }
-    }*/
+    
     [XmlIgnore]
     public string Name
 	{
@@ -157,7 +151,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string nextStepID
 	{
-		get { if (nextStep == null || nextStep.Length == 0) return ""; return nextStep[0].Value; }
+		get { if (nextStep == null || nextStep.Length == 0 || nextStep[0].Value==null) return ""; return nextStep[0].Value; }
 		set
 		{
 			if (nextStep == null)
