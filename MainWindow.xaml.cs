@@ -197,7 +197,7 @@ namespace EvilWindowsEditor
         }
         private void MenuItem_CreateQuest(object sender, RoutedEventArgs e)
         {
-            GameDataViewObject.addNewObject("Quest");
+            GameDataViewObject.addNewQuest();
         }
         private void MenuItem_CreateHenchman(object sender, RoutedEventArgs e)
         {
@@ -397,7 +397,6 @@ namespace EvilWindowsEditor
         }
         private void FlowchartVisibilityChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-
             QuestFlowchart qf = sender as QuestFlowchart;
             if (e.NewValue as bool? == true)
             {

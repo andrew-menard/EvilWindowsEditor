@@ -181,6 +181,22 @@ public partial class gamedataObject: INotifyPropertyChanged
         }
     }
     [XmlIgnore]
+    public string startingQuestID
+    {
+        get { if (startingQuest == null || startingQuest.Length == 0) return ""; return startingQuest[0].Value; }
+        set
+        {
+            if (startingQuest == null)
+            {
+                startingQuest = new gamedataObjectStartingQuest[1];
+                startingQuest[0] = new gamedataObjectStartingQuest();
+                startingQuest[0].@class = "UUID";
+            }
+            startingQuest[0].Value = value;
+            NotifyPropertyChanged("startingQuestID");
+        }
+    }
+    [XmlIgnore]
     public string statGroupID
     {
         get { if (statGroup == null || statGroup.Length == 0) return ""; return statGroup[0].Value; }
@@ -194,6 +210,22 @@ public partial class gamedataObject: INotifyPropertyChanged
             }
             statGroup[0].Value = value;
             NotifyPropertyChanged("statGroupID");
+        }
+    }
+    [XmlIgnore]
+    public string startingLocationID
+    {
+        get { if (startingLocation == null || startingLocation.Length == 0) return ""; return startingLocation[0].Value; }
+        set
+        {
+            if (startingLocation == null)
+            {
+                startingLocation = new gamedataObjectStartingLocation[1];
+                startingLocation[0] = new gamedataObjectStartingLocation();
+                startingLocation[0].@class = "UUID";
+            }
+            startingLocation[0].Value = value;
+            NotifyPropertyChanged("startingLocationID");
         }
     }
     [XmlIgnore]

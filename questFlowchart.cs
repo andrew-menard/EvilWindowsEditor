@@ -60,6 +60,11 @@ namespace EvilWindowsEditor
                 Children.Add(stepButton.button);//Add the actual button to the canvas; placement is arbitrary right now but will be fixed up below
                 SetZIndex(stepButton.button, 1);
 			}
+
+            //While creating a quest, we hit this...
+            if (notYetUsedStepButtons.Count() == 0)
+                return;
+
 			//Creating a flowchart:  we form columns of these step buttons.
 			//The first column consists of the button for the quests starting step.
 			//Then, we loop over all the steps in the rightmost column, and for each of those, we look at the following steps; if they are already somewhere, this is a backward loop, if they are not anywhere yet, they go into the next column.

@@ -10,6 +10,9 @@ namespace EvilWindowsEditor
 {
     public class GameTreeItem : INotifyPropertyChanged
     {
+        //This is the class for stuff in the tree view; Name is what gets displayed.  Since this can either be an actual 
+        //object or a category of objects, you can set a ref to an object, in which case the name comes from that, or you
+        //can have a null object and set name manually for a category.
         public GameTreeItem()
         {
             Children = new ObservableCollection<GameTreeItem>();
@@ -60,7 +63,6 @@ namespace EvilWindowsEditor
         private ObservableCollection<gamedataObject> npcs; //List of npcs, for binding combo boxes for npcs.
         public ObservableCollection<gamedataObject> NPCs { get => npcs; set { npcs = value; NotifyPropertyChanged("NPCs"); } }
         Dictionary<String, List<gamedataObject>> elementsByType; //For elements that show up in the tree view only.
-        Dictionary<String, List<gamedataObject>> allElementsByType; //General set of everything
 
         private bool _postLoad = false;
         public bool PostLoad { get { return _postLoad; } set { _postLoad = value; NotifyPropertyChanged("pickNewObjectVisible"); NotifyPropertyChanged("PostLoad"); NotifyPropertyChanged("PreLoad"); } }
@@ -150,15 +152,6 @@ namespace EvilWindowsEditor
                     }
                     elementsByType[gameObject.@class].Add(gameObject);
                 }
-                allElementsByType.Clear();
-                foreach (gamedataObject gameObject in root.Items)
-                {
-                    if (!allElementsByType.ContainsKey(gameObject.@class))
-                    {
-                        allElementsByType.Add(gameObject.@class, new List<gamedataObject>());
-                    }
-                    allElementsByType[gameObject.@class].Add(gameObject);
-                }
                 GameTree.Clear();
                 var elementList = new List<string> { "ItemTypeData", "ItemData", "StatData", "QuestData", "StatGroupData", "HenchmanData", "LocationData", "NPCData", "StartingCharacterInfoData" };
                 foreach (String elementClass in elementList)
@@ -204,10 +197,6 @@ namespace EvilWindowsEditor
                     _selectedQuestStep = value;
                     if (value != null)
                     {
-                        //While we're at it, tell the controls bound to the selected step's name and description to update..
-                        _selectedQuestStep.NotifyPropertyChanged("name");
-
-                        _selectedQuestStep.NotifyPropertyChanged("description");
                         //Populate the list of quest stepchoices.  Comes after the above which might be fixing a quest step so it gets found here.
                         selectedQuestStepChoicesObservable.Clear();
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
@@ -767,15 +756,13 @@ namespace EvilWindowsEditor
         }
         public string startingLocation
         {
-            get { if (gameDataObj == null || gameDataObj.startingLocation == null || gameDataObj.startingLocation.First() == null) { return ""; } else return gameDataObj.startingLocation.First().Value; }
+            get { if (gameDataObj == null || gameDataObj.startingLocationID == null) { return ""; } else return gameDataObj.startingLocationID; }
             set
             {
-                if (gameDataObj.startingLocation == null)
+                if (gameDataObj != null)
                 {
-                    gameDataObj.startingLocation = new gamedataObjectStartingLocation[1];
-                    gameDataObj.startingLocation[0] = new gamedataObjectStartingLocation();
+                    gameDataObj.startingLocationID = value;
                 }
-                gameDataObj.startingLocation.First().Value = value;
             }
         }
         public string associatedLocation
@@ -812,15 +799,13 @@ namespace EvilWindowsEditor
         }
         public string startingQuest
         {
-            get { if (gameDataObj == null || gameDataObj.startingQuest == null || gameDataObj.startingQuest.First() == null) { return ""; } else return gameDataObj.startingQuest.First().Value; }
+            get { if (gameDataObj == null || gameDataObj.startingQuestID == null) { return ""; } else return gameDataObj.startingQuestID; }
             set
             {
-                if (gameDataObj.startingQuest == null)
+                if (gameDataObj != null)
                 {
-                    gameDataObj.startingQuest = new gamedataObjectStartingQuest[1];
-                    gameDataObj.startingQuest[0] = new gamedataObjectStartingQuest();
+                    gameDataObj.startingQuestID = value;
                 }
-                gameDataObj.startingQuest.First().Value = value;
             }
         }
         public string itemType
@@ -1115,10 +1100,9 @@ namespace EvilWindowsEditor
             }
             SelectNewObject(newObj, objectType);
         }
-        public void SelectNewObject(gamedataObject newObj, string objectType)
+        private void SelectNewObject(gamedataObject newObj, string objectType)
         {
-            //This sets the newly created object as the selected object, rebuilds the secondary items that depend on it,
-            //and fires all the relevant change notifications
+            //This sets the newly created object as the selected object in the tree view
             bool foundTreeItem = false;
             GameTreeItem childNode = new GameTreeItem() { ObjectRef = newObj };
             foreach (GameTreeItem iter in GameTree)
@@ -1740,7 +1724,6 @@ namespace EvilWindowsEditor
             npcs = new ObservableCollection<gamedataObject>();
             npcs.OrderBy(g => g.name);
             elementsByType = new Dictionary<string, List<gamedataObject>>();
-			allElementsByType = new Dictionary<string, List<gamedataObject>>();
         }
         //Implementing INotifyPropertyChanged interface
         public event PropertyChangedEventHandler PropertyChanged;

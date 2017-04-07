@@ -236,256 +236,263 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <StackPanel x:Name="QuestStepPanel" Orientation="Vertical" Margin="10,0,0,0" Background="Beige" Visibility="{Binding questStepPanelVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Button  Grid.Column="0" Click="ReturnToFlowchartButton_Click">Return to flowchart view of quest</Button>
-                                <Button Grid.Column="2" Click="DeleteSelectedQuestStepButton_Click">Delete this quest step</Button>
-                            </Grid>
-                            <StackPanel Orientation="Horizontal">
-                                <Label>Name:</Label>
-                                <TextBox Width="500" Text="{Binding stepName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                            </StackPanel>
-
-                            <Border BorderBrush="Black" BorderThickness="1" >
-                                <StackPanel Orientation="Vertical">
-                                    <DockPanel>
-                                        <Label DockPanel.Dock="Left">Step Description:</Label>
-                                        <StackPanel Orientation="Vertical">
-                                            <Border x:Name="QuestStepDescriptionSizingPlaceholder"></Border>
-                                            <TextBox Height="100" Width="{Binding ActualWidth, ElementName=QuestStepDescriptionSizingPlaceholder}" TextWrapping="Wrap" Text="{Binding stepDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                                        </StackPanel>
-                                    </DockPanel>
-                                    <Border BorderBrush="Black" BorderThickness="1">
-                                        <WebBrowser HorizontalAlignment="Stretch" Height="100" local:BrowserBehavior.Html="{Binding stepDescription, Mode=OneWay}"></WebBrowser>
-                                    </Border>
+                        <Border BorderBrush="Black" BorderThickness="0 5 0 0"  Visibility="{Binding questStepPanelVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}" >
+                            <StackPanel x:Name="QuestStepPanel" Orientation="Vertical" Margin="10,0,0,0" Background="Beige">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Click="ReturnToFlowchartButton_Click" Grid.Column="0">Return to flowchart view of quest</Button>
+                                    <Button Click="DeleteSelectedQuestStepButton_Click" Grid.Column="2">Delete this quest step</Button>
+                                </Grid>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label>Name:</Label>
+                                    <TextBox Width="500" Text="{Binding stepName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                 </StackPanel>
-                            </Border>
-                            <StackPanel Orientation="Horizontal">
-                                <Label>Quest Step Alternate Background:</Label>
-                                <TextBox Width="500" Text="{Binding alternateBackground, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Label>Move Character to Location at start of step:</Label>
-                                <ComboBox Width="150" ItemsSource="{Binding Locations, Mode=OneWay}"  DisplayMemberPath="Name" 
+
+                                <Border BorderBrush="Black" BorderThickness="1" >
+                                    <StackPanel Orientation="Vertical">
+                                        <DockPanel>
+                                            <Label DockPanel.Dock="Left">Step Description:</Label>
+                                            <StackPanel Orientation="Vertical">
+                                                <Border x:Name="QuestStepDescriptionSizingPlaceholder"></Border>
+                                                <TextBox Height="100" Width="{Binding ActualWidth, ElementName=QuestStepDescriptionSizingPlaceholder}" TextWrapping="Wrap" Text="{Binding stepDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                            </StackPanel>
+                                        </DockPanel>
+                                        <Border BorderBrush="Black" BorderThickness="1">
+                                            <WebBrowser HorizontalAlignment="Stretch" Height="100" local:BrowserBehavior.Html="{Binding stepDescription, Mode=OneWay}"></WebBrowser>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label>Quest Step Alternate Background:</Label>
+                                    <TextBox Width="500" Text="{Binding alternateBackground, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label>Move Character to Location at start of step:</Label>
+                                    <ComboBox Width="150" ItemsSource="{Binding Locations, Mode=OneWay}"  DisplayMemberPath="Name" 
                                           SelectedValuePath="uuid"
                                           IsSynchronizedWithCurrentItem="False" 
                                           SelectedValue="{Binding moveToLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                </ComboBox>
-                            </StackPanel>
+                                    </ComboBox>
+                                </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" >
-                                <Label>Permanently unlock Location:</Label>
-                                <ComboBox Width="150" ItemsSource="{Binding Locations, Mode=OneWay}"  DisplayMemberPath="Name" 
+                                <StackPanel Orientation="Horizontal" >
+                                    <Label>Permanently unlock Location:</Label>
+                                    <ComboBox Width="150" ItemsSource="{Binding Locations, Mode=OneWay}"  DisplayMemberPath="Name" 
                                           SelectedValuePath="uuid"
                                           IsSynchronizedWithCurrentItem="False" 
                                           SelectedValue="{Binding unlockLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                </ComboBox>
-                            </StackPanel>
+                                    </ComboBox>
+                                </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" >
-                                <Label>Associated Location:</Label>
-                                <ComboBox Width="150" ItemsSource="{Binding Locations, Mode=OneWay}"  DisplayMemberPath="Name" 
+                                <StackPanel Orientation="Horizontal" >
+                                    <Label>Associated Location:</Label>
+                                    <ComboBox Width="150" ItemsSource="{Binding Locations, Mode=OneWay}"  DisplayMemberPath="Name" 
                                           SelectedValuePath="uuid"
                                           IsSynchronizedWithCurrentItem="False" 
                                           SelectedValue="{Binding associatedLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                </ComboBox>
-                            </StackPanel>
+                                    </ComboBox>
+                                </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" >
-                                <Label>Associated NPC:</Label>
-                                <ComboBox Width="150" ItemsSource="{Binding NPCs, Mode=OneWay}"  DisplayMemberPath="Name" 
+                                <StackPanel Orientation="Horizontal" >
+                                    <Label>Associated NPC:</Label>
+                                    <ComboBox Width="150" ItemsSource="{Binding NPCs, Mode=OneWay}"  DisplayMemberPath="Name" 
                                           SelectedValuePath="uuid"
                                           IsSynchronizedWithCurrentItem="False" 
                                           SelectedValue="{Binding associatedNPC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                </ComboBox>
-                            </StackPanel>
-
-
-                            <StackPanel Orientation="Vertical">
-                                <StackPanel Orientation="Horizontal">
-                                    <Label >Items granted by this step:</Label>
-                                    <Button Click="AddQuestStepItemGrantButton_Click">Add new item grant</Button>
-                                    <Button Click="DeleteSelectedQuestStepItemGrantButton_Click">Delete selected item grant</Button>
+                                    </ComboBox>
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <DataGrid ItemsSource="{Binding selectedQuestStepItemGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
+
+
+                                <StackPanel Orientation="Vertical">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label >Items granted by this step:</Label>
+                                        <Button Click="AddQuestStepItemGrantButton_Click">Add new item grant</Button>
+                                        <Button Click="DeleteSelectedQuestStepItemGrantButton_Click">Delete selected item grant</Button>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <DataGrid ItemsSource="{Binding selectedQuestStepItemGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
                                           CanUserDeleteRows="False" CanUserSortColumns="True" x:Name="QuestStepItemGrantGridRoot">
-                                        <DataGrid.Columns>
-                                            <DataGridComboBoxColumn  Header = "Item to grant" Width="200" 
+                                            <DataGrid.Columns>
+                                                <DataGridComboBoxColumn  Header = "Item to grant" Width="200" 
                                                                  SelectedValueBinding = "{Binding itemID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                                  ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Items, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>
-                                            <DataGridTextColumn Header = "Number to grant" Binding = "{Binding integerValue}" />
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                                <DataGridTextColumn Header = "Number to grant" Binding = "{Binding integerValue}" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
 
 
-                            <StackPanel Orientation="Vertical">
-                                <StackPanel Orientation="Horizontal">
-                                    <Label >Stats granted by this step:</Label>
-                                    <Button Click="AddQuestStepStatGrantButton_Click">Add new stat grant</Button>
-                                    <Button Click="DeleteSelectedQuestStepStatGrantButton_Click">Delete selected stat grant</Button>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <DataGrid ItemsSource="{Binding selectedQuestStepStatGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
+                                <StackPanel Orientation="Vertical">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label >Stats granted by this step:</Label>
+                                        <Button Click="AddQuestStepStatGrantButton_Click">Add new stat grant</Button>
+                                        <Button Click="DeleteSelectedQuestStepStatGrantButton_Click">Delete selected stat grant</Button>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <DataGrid ItemsSource="{Binding selectedQuestStepStatGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
                                           CanUserDeleteRows="False" CanUserSortColumns="True" x:Name="QuestStepStatGrantGridRoot">
-                                        <DataGrid.Columns>
-                                            <DataGridComboBoxColumn  Header = "Stat to grant" Width="200" 
+                                            <DataGrid.Columns>
+                                                <DataGridComboBoxColumn  Header = "Stat to grant" Width="200" 
                                                                  SelectedValueBinding = "{Binding statID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                                  ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Stats, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>
-                                            <DataGridTextColumn Header = "Amount to grant" Binding = "{Binding integerValue}" />
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                                <DataGridTextColumn Header = "Amount to grant" Binding = "{Binding integerValue}" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
 
-                            <StackPanel Orientation="Vertical">
-                                <StackPanel Orientation="Horizontal">
-                                    <Label >Henchman granted by this step:</Label>
-                                    <Button Click="AddQuestStepHenchmanGrantButton_Click">Add new henchman grant</Button>
-                                    <Button Click="DeleteSelectedQuestStepHenchmanGrantButton_Click">Delete selected henchman grant</Button>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <DataGrid ItemsSource="{Binding selectedQuestStepHenchmanGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
+                                <StackPanel Orientation="Vertical">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label >Henchman granted by this step:</Label>
+                                        <Button Click="AddQuestStepHenchmanGrantButton_Click">Add new henchman grant</Button>
+                                        <Button Click="DeleteSelectedQuestStepHenchmanGrantButton_Click">Delete selected henchman grant</Button>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <DataGrid ItemsSource="{Binding selectedQuestStepHenchmanGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
                                           CanUserDeleteRows="False" CanUserSortColumns="True" x:Name="QuestStepHenchmanGrantGridRoot">
-                                        <DataGrid.Columns>
-                                            <DataGridComboBoxColumn  Header = "Henchman to grant" Width="200" 
+                                            <DataGrid.Columns>
+                                                <DataGridComboBoxColumn  Header = "Henchman to grant" Width="200" 
                                                                  SelectedValueBinding = "{Binding henchmanID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                                  ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Henchmen, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
 
-                            <StackPanel Orientation="Vertical">
-                                <StackPanel Orientation="Horizontal">
-                                    <Label >Choices on this step:</Label>
-                                    <Button Click="AddQuestStepChoiceButton_Click">Add new choice</Button>
-                                    <Button Click="AddNewQuestStepToChoiceButton_Click">Add new step as followup to the selected choice</Button>
-                                    <Button Click="DeleteSelectedQuestStepChoiceButton_Click">Delete the selected choice</Button>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <DataGrid ItemsSource="{Binding selectedQuestStepChoicesObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
+                                <StackPanel Orientation="Vertical">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label >Choices on this step:</Label>
+                                        <Button Click="AddQuestStepChoiceButton_Click">Add new choice</Button>
+                                        <Button Click="AddNewQuestStepToChoiceButton_Click">Add new step as followup to the selected choice</Button>
+                                        <Button Click="DeleteSelectedQuestStepChoiceButton_Click">Delete the selected choice</Button>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <DataGrid ItemsSource="{Binding selectedQuestStepChoicesObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
                                           CanUserDeleteRows="False" CanUserSortColumns="True" x:Name="QuestStepChoiceGridRoot" SelectedItem="{Binding SelectedQuestStepChoice, Mode=TwoWay}">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                            <DataGridTextColumn Header="Description" Binding="{Binding description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                            <DataGridComboBoxColumn  Header = "Next Step" Width="200" 
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <DataGridTextColumn Header="Description" Binding="{Binding description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                <DataGridComboBoxColumn  Header = "Next Step" Width="200" 
                                                                  SelectedValueBinding = "{Binding nextStepID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                                  ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.selectedQuestStepsObservable, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
+
                                 </StackPanel>
 
-                            </StackPanel>
+                                <StackPanel x:Name="StepChoiceDetails" Visibility="{Binding questStepChoiceDataVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}" Margin="10,0,0,0" Background="Bisque">
 
-                            <StackPanel x:Name="StepChoiceDetails" Visibility="{Binding questStepChoiceDataVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}" Margin="10,0,0,0" Background="Bisque">
-
-                                <StackPanel Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Label >Stat Requirements for this choice:</Label>
-                                        <Button Click="AddQuestStepChoiceStatRequirementButton_Click">Add new Stat Requirement</Button>
-                                        <Button Click="DeleteSelectedQuestStepChoiceStatRequirementButton_Click">Delete selected Stat Requirement</Button>
-                                    </StackPanel>
-                                    <DataGrid ItemsSource="{Binding selectedQuestStepChoiceStatRequirementsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label >Stat Requirements for this choice:</Label>
+                                            <Button Click="AddQuestStepChoiceStatRequirementButton_Click">Add new Stat Requirement</Button>
+                                            <Button Click="DeleteSelectedQuestStepChoiceStatRequirementButton_Click">Delete selected Stat Requirement</Button>
+                                        </StackPanel>
+                                        <DataGrid ItemsSource="{Binding selectedQuestStepChoiceStatRequirementsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
                                           CanUserDeleteRows="False" CanUserSortColumns="True" x:Name="QuestStepChoiceStatRequirementGridRoot">
-                                        <DataGrid.Columns>
-                                            <DataGridComboBoxColumn  Header = "Stat" Width="200" 
+                                            <DataGrid.Columns>
+                                                <DataGridComboBoxColumn  Header = "Stat" Width="200" 
                                                                  SelectedValueBinding = "{Binding statID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                                  ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Stats, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>
-                                            <DataGridTextColumn Header = "Minimum" Binding = "{Binding minimum}" />
-                                            <DataGridTextColumn Header = "Maximum" Binding = "{Binding maximum}" />
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </StackPanel>
-
-                                <StackPanel Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Label >Stat grants for this choice:</Label>
-                                        <Button Click="AddQuestStepChoiceStatGrantButton_Click">Add new Stat grant</Button>
-                                        <Button Click="DeleteSelectedQuestStepChoiceStatGrantButton_Click">Delete selected Stat grant</Button>
+                                                <DataGridTextColumn Header = "Minimum" Binding = "{Binding minimum}" />
+                                                <DataGridTextColumn Header = "Maximum" Binding = "{Binding maximum}" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
                                     </StackPanel>
-                                    <DataGrid ItemsSource="{Binding selectedQuestStepChoiceStatGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
+
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label >Stat grants for this choice:</Label>
+                                            <Button Click="AddQuestStepChoiceStatGrantButton_Click">Add new Stat grant</Button>
+                                            <Button Click="DeleteSelectedQuestStepChoiceStatGrantButton_Click">Delete selected Stat grant</Button>
+                                        </StackPanel>
+                                        <DataGrid ItemsSource="{Binding selectedQuestStepChoiceStatGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
                                           CanUserDeleteRows="False" CanUserSortColumns="True" x:Name="QuestStepChoiceStatGrantGridRoot">
-                                        <DataGrid.Columns>
-                                            <DataGridComboBoxColumn  Header = "Stat" Width="200" 
+                                            <DataGrid.Columns>
+                                                <DataGridComboBoxColumn  Header = "Stat" Width="200" 
                                                                  SelectedValueBinding = "{Binding statID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                                  ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Stats, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>
-                                            <DataGridTextColumn Header = "Amount" Binding = "{Binding integerValue}" />
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </StackPanel>
-
-
-                                <StackPanel Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Label >Item grants for this choice:</Label>
-                                        <Button Click="AddQuestStepChoiceItemGrantButton_Click">Add new item grant</Button>
-                                        <Button Click="DeleteSelectedQuestStepChoiceItemGrantButton_Click">Delete selected item grant</Button>
+                                                <DataGridTextColumn Header = "Amount" Binding = "{Binding integerValue}" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
                                     </StackPanel>
-                                    <DataGrid ItemsSource="{Binding selectedQuestStepChoiceItemGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
+
+
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label >Item grants for this choice:</Label>
+                                            <Button Click="AddQuestStepChoiceItemGrantButton_Click">Add new item grant</Button>
+                                            <Button Click="DeleteSelectedQuestStepChoiceItemGrantButton_Click">Delete selected item grant</Button>
+                                        </StackPanel>
+                                        <DataGrid ItemsSource="{Binding selectedQuestStepChoiceItemGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
                                           CanUserDeleteRows="False" CanUserSortColumns="True" x:Name="QuestStepChoiceItemGrantGridRoot">
-                                        <DataGrid.Columns>
-                                            <DataGridComboBoxColumn  Header = "Item" Width="200" 
+                                            <DataGrid.Columns>
+                                                <DataGridComboBoxColumn  Header = "Item" Width="200" 
                                                                  SelectedValueBinding = "{Binding itemID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                                  ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Stats, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>
-                                            <DataGridTextColumn Header = "Number" Binding = "{Binding integerValue}" />
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </StackPanel>
-
-                                <StackPanel Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Label >Henchman grants for this choice:</Label>
-                                        <Button Click="AddQuestStepChoiceHenchmanGrantButton_Click">Add new henchman grant</Button>
-                                        <Button Click="DeleteSelectedQuestStepChoiceHenchmanGrantButton_Click">Delete selected henchman grant</Button>
+                                                <DataGridTextColumn Header = "Number" Binding = "{Binding integerValue}" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
                                     </StackPanel>
-                                    <DataGrid ItemsSource="{Binding selectedQuestStepChoiceHenchmanGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
+
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label >Henchman grants for this choice:</Label>
+                                            <Button Click="AddQuestStepChoiceHenchmanGrantButton_Click">Add new henchman grant</Button>
+                                            <Button Click="DeleteSelectedQuestStepChoiceHenchmanGrantButton_Click">Delete selected henchman grant</Button>
+                                        </StackPanel>
+                                        <DataGrid ItemsSource="{Binding selectedQuestStepChoiceHenchmanGrantsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
                                           CanUserDeleteRows="False" CanUserSortColumns="True" x:Name="QuestStepChoiceHenchmanGrantGridRoot">
-                                        <DataGrid.Columns>
-                                            <DataGridComboBoxColumn  Header = "Henchman" Width="200" 
+                                            <DataGrid.Columns>
+                                                <DataGridComboBoxColumn  Header = "Henchman" Width="200" 
                                                                  SelectedValueBinding = "{Binding henchmanID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                                  ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Stats, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
                                 </StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Click="ReturnToFlowchartButton_Click" Grid.Column="0">Return to flowchart view of quest</Button>
+                                </Grid>
                             </StackPanel>
-                        </StackPanel>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                        </Border>
 
-                            <ScrollViewer Grid.Column="1"  VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" CanContentScroll="False" >
-                                <local:QuestFlowchart x:Name="FlowchartPanel"  Background = "DeepSkyBlue" MinWidth="600" MinHeight="600" 
-                                    Visibility="{Binding questFlowchartVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"
-                                                  IsVisibleChanged="FlowchartVisibilityChanged" Grid.Column="0">
-                                </local:QuestFlowchart>
-                            </ScrollViewer>
-                        </Grid>
+                        <Border BorderBrush="Black" BorderThickness="0 5 0 0" Visibility="{Binding questFlowchartVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <StackPanel Orientation="Horizontal">
+                            </StackPanel>
+                        </Border>
+                                <ScrollViewer Grid.Column="1"  VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" CanContentScroll="False" >
+                                    <local:QuestFlowchart x:Name="FlowchartPanel"  Background = "DeepSkyBlue" MinWidth="600" MinHeight="600" 
+                                                  IsVisibleChanged="FlowchartVisibilityChanged" Grid.Column="0" Visibility="{Binding questFlowchartVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                    </local:QuestFlowchart>
+                                </ScrollViewer>
+                                <StackPanel HorizontalAlignment="Stretch"></StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </Grid>
