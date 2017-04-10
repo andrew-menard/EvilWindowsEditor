@@ -487,12 +487,13 @@
                             <StackPanel Orientation="Horizontal">
                             </StackPanel>
                         </Border>
-                                <ScrollViewer Grid.Column="1"  VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" CanContentScroll="False" >
-                                    <local:QuestFlowchart x:Name="FlowchartPanel"  Background = "DeepSkyBlue" MinWidth="600" MinHeight="600" 
-                                                  IsVisibleChanged="FlowchartVisibilityChanged" Grid.Column="0" Visibility="{Binding questFlowchartVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
-                                    </local:QuestFlowchart>
-                                </ScrollViewer>
-                                <StackPanel HorizontalAlignment="Stretch"></StackPanel>
+                        <ScrollViewer HorizontalAlignment="Left" Grid.Column="1"  VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" CanContentScroll="False" >
+                            <StackPanel Orientation="Horizontal">
+                                <local:QuestFlowchart x:Name="FlowchartPanel"  Background = "DeepSkyBlue" MinWidth="600" MinHeight="600" 
+                                                IsVisibleChanged="FlowchartVisibilityChanged" Grid.Column="0" Visibility="{Binding questFlowchartVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                                </local:QuestFlowchart>
+                            </StackPanel>
+                        </ScrollViewer>
                     </StackPanel>
                 </ScrollViewer>
             </Grid>

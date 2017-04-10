@@ -184,7 +184,7 @@ namespace EvilWindowsEditor
         {
             get
             {
-                if (_selectedQuestStep != null && gameDataObj != null && gameDataObj.@class == "QuestData")
+                if (_selectedQuestStep != null && gameDataObj != null && gameDataObj.@class.Equals("QuestData"))
                 {
                     return _selectedQuestStep;
                 }
@@ -244,7 +244,7 @@ namespace EvilWindowsEditor
         {
             get
             {
-                if (_selectedQuestStepChoice != null && _selectedQuestStep != null && gameDataObj != null && gameDataObj.@class == "QuestData")
+                if (_selectedQuestStepChoice != null && _selectedQuestStep != null && gameDataObj != null && gameDataObj.@class.Equals("QuestData"))
                 {
                     return true;
                 }
@@ -328,7 +328,7 @@ namespace EvilWindowsEditor
                 if (gameDataObj != value)
                 {
                     gameDataObj = value;
-                    if (gameDataObj != null && gameDataObj.@class == "ItemData")
+                    if (gameDataObj != null && gameDataObj.@class.Equals("ItemData"))
                     {
                         //If this is an item, populate the list of relevant item stat modifiers.
                         itemStatModifiersObservable.Clear();
@@ -337,7 +337,7 @@ namespace EvilWindowsEditor
                             itemStatModifiersObservable.Add(gameObject);
                         }
                     }
-                    if (gameDataObj != null && gameDataObj.@class == "StartingCharacterInfoData")
+                    if (gameDataObj != null && gameDataObj.@class.Equals("StartingCharacterInfoData"))
                     {
                         startingCharacterStatModifiersObservable.Clear();
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StartingCharacterInfoStatModifierData") && iter.startingCharacterInfoID.Equals(gameDataObj.uuid) && iter.deleted.Equals("False")))
@@ -345,7 +345,7 @@ namespace EvilWindowsEditor
                             startingCharacterStatModifiersObservable.Add(gameObject);
                         }
                     }
-                    if (gameDataObj != null && gameDataObj.@class == "HenchmanData")
+                    if (gameDataObj != null && gameDataObj.@class.Equals("HenchmanData"))
                     {
                         //If this is an henchman, populate the list of relevant henchman stats.
                         henchmanStats.Clear();
@@ -354,7 +354,7 @@ namespace EvilWindowsEditor
                             henchmanStats.Add(gameObject);
                         }
                     }
-                    if (gameDataObj != null && gameDataObj.@class == "QuestData")
+                    if (gameDataObj != null && gameDataObj.@class.Equals("QuestData"))
                     {
                         //If this is an quest, populate the list of relevant quest stat requirements.
                         questStatRequirements.Clear();
@@ -378,6 +378,10 @@ namespace EvilWindowsEditor
                         }
                         //Populate the list of quest steps.  Comes after the above which might be fixing a quest step so it gets found here.
                         selectedQuestStepsObservable.Clear();
+                        gamedataObject nullStep = new gamedataObject();
+                        nullStep.uuid = "";
+                        nullStep.name = "(none)";
+                        selectedQuestStepsObservable.Add(nullStep); //Empty value so you can "unselect" things in the combo boxes
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepData") && iter.questID.Equals(gameDataObj.uuid) && iter.deleted.Equals("False")))
                         {
                             selectedQuestStepsObservable.Add(gameObject);
@@ -556,7 +560,7 @@ namespace EvilWindowsEditor
                 }
                 else
                 {
-                    return gameDataObj.equippable == "True";
+                    return gameDataObj.equippable.Equals("True");
                 }
             }
             set
@@ -564,9 +568,9 @@ namespace EvilWindowsEditor
                 if (gameDataObj != null)
                 {
                     if (value == true)
-                    { gameDataObj.equippable = "True"; }
+                    { gameDataObj.equippable.Equals("True"); }
                     else
-                    { gameDataObj.equippable = "False"; }
+                    { gameDataObj.equippable.Equals("False"); }
                 }
             }
         }
@@ -580,7 +584,7 @@ namespace EvilWindowsEditor
                 }
                 else
                 {
-                    return gameDataObj.oneTimeQuest == "True";
+                    return gameDataObj.oneTimeQuest.Equals("True");
                 }
             }
             set
@@ -604,7 +608,7 @@ namespace EvilWindowsEditor
                 }
                 else
                 {
-                    return gameDataObj.questIsForceGranted == "True";
+                    return gameDataObj.questIsForceGranted.Equals("True");
                 }
             }
             set
@@ -628,7 +632,7 @@ namespace EvilWindowsEditor
                 }
                 else
                 {
-                    return gameDataObj.displayedOnSidebar == "True";
+                    return gameDataObj.displayedOnSidebar.Equals("True");
                 }
             }
             set
@@ -652,7 +656,7 @@ namespace EvilWindowsEditor
                 }
                 else
                 {
-                    return gameDataObj.displayedOnMainStatPage == "True";
+                    return gameDataObj.displayedOnMainStatPage.Equals("True");
                 }
             }
             set
@@ -700,7 +704,7 @@ namespace EvilWindowsEditor
             get
             {
                 if (gameDataObj == null) { return false; }
-                if (gameDataObj.@class == "ItemTypeData")
+                if (gameDataObj.@class.Equals("ItemTypeData"))
                 { return true; }
                 else
                 { return false; }
@@ -711,7 +715,7 @@ namespace EvilWindowsEditor
             get
             {
                 if (gameDataObj == null) { return false; }
-                if (gameDataObj.@class == "QuestData")
+                if (gameDataObj.@class.Equals("QuestData"))
                 { return true; }
                 else
                 { return false; }
@@ -722,7 +726,7 @@ namespace EvilWindowsEditor
             get
             {
                 if (gameDataObj == null) { return false; }
-                if (gameDataObj.@class == "StartingCharacterInfoData")
+                if (gameDataObj.@class.Equals("StartingCharacterInfoData"))
                 {
                     return true;
                 }
@@ -737,7 +741,7 @@ namespace EvilWindowsEditor
             get
             {
                 if (gameDataObj == null) { return false; }
-                if (gameDataObj.@class == "HenchmanData")
+                if (gameDataObj.@class.Equals("HenchmanData"))
                 { return true; }
                 else
                 { return false; }
@@ -829,7 +833,7 @@ namespace EvilWindowsEditor
             get
             {
                 if (gameDataObj == null) { return false; }
-                if (gameDataObj.@class == "ItemData")
+                if (gameDataObj.@class.Equals("ItemData"))
                 { return true; }
                 else
                 { return false; }
@@ -840,7 +844,7 @@ namespace EvilWindowsEditor
             get
             {
                 if (gameDataObj == null) { return false; }
-                if (gameDataObj.@class == "StatData")
+                if (gameDataObj.@class.Equals("StatData"))
                 { return true; }
                 else
                 { return false; }
@@ -851,7 +855,7 @@ namespace EvilWindowsEditor
             get
             {
                 if (gameDataObj == null) { return false; }
-                if (gameDataObj.@class == "StatGroupData")
+                if (gameDataObj.@class.Equals("StatGroupData"))
                 { return true; }
                 else
                 { return false; }
@@ -1013,7 +1017,7 @@ namespace EvilWindowsEditor
             get
             {
                 if (gameDataObj == null) { return false; }
-                if (gameDataObj.@class == "QuestData")
+                if (gameDataObj.@class.Equals("QuestData"))
                 { return true; }
                 else
                 { return false; }
@@ -1024,7 +1028,7 @@ namespace EvilWindowsEditor
             get
             {
                 if (gameDataObj == null) { return false; }
-                if (gameDataObj.@class == "QuestData")
+                if (gameDataObj.@class.Equals("QuestData"))
                 {
                     if (_selectedQuestStep == null)
                     { return true; }
@@ -1041,7 +1045,7 @@ namespace EvilWindowsEditor
             get
             {
                 if (gameDataObj == null) { return false; }
-                if (gameDataObj.@class == "QuestData")
+                if (gameDataObj.@class.Equals("QuestData"))
                 {
                     if (_selectedQuestStep == null)
                     { return false; }
@@ -1376,7 +1380,7 @@ namespace EvilWindowsEditor
                     return "";
                 Boolean canDelete = true;
                 List<string> blockingObjects = new List<string>();
-                if (gameDataObj.@class == "ItemTypeData")
+                if (gameDataObj.@class.Equals("ItemTypeData"))
                 {
                     foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => (iter.deleted == null || iter.deleted != "True") && iter.@class.Equals("ItemData") && iter.itemTypeID.Equals(gameDataObj.uuid)))
                     {
@@ -1384,7 +1388,7 @@ namespace EvilWindowsEditor
                         blockingObjects.Add(gameObject.name);
                     }
                 }
-                else if (gameDataObj.@class == "StatGroupData")
+                else if (gameDataObj.@class.Equals("StatGroupData"))
                 {
                     foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => (iter.deleted == null || iter.deleted != "True") && iter.@class.Equals("StatData") && iter.statGroupID.Equals(gameDataObj.uuid)))
                     {
@@ -1392,23 +1396,23 @@ namespace EvilWindowsEditor
                         blockingObjects.Add(gameObject.name);
                     }
                 }
-                else if (gameDataObj.@class == "LocationData")
+                else if (gameDataObj.@class.Equals("LocationData"))
                 {
                     //Nothing currently blocks locations, will likely add quests that can move you to a location soon.
                 }
-                else if (gameDataObj.@class == "HenchmanData")
+                else if (gameDataObj.@class.Equals("HenchmanData"))
                 {
                     //Nothing currently blocks henchmen, will likely add quests that grant you a henchman or level the henchman soon
                 }
-                else if (gameDataObj.@class == "QuestData")
+                else if (gameDataObj.@class.Equals("QuestData"))
                 {
                     //Nothing currently blocks quests; perhaps in the future there will be items that grant quests
                 }
-                else if (gameDataObj.@class == "NPCData")
+                else if (gameDataObj.@class.Equals("NPCData"))
                 {
                     //Nothing currently blocks npcs
                 }
-                else if (gameDataObj.@class == "StatData")
+                else if (gameDataObj.@class.Equals("StatData"))
                 {
                     //Lots of things reference stats, so instead of a long type check, just look for stat != null.
                     foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => (iter.deleted==null || iter.deleted!="True") && iter.statID.Equals(gameDataObj.uuid)))
@@ -1417,7 +1421,7 @@ namespace EvilWindowsEditor
                         blockingObjects.Add(gameObject.name);
                     }
                 }
-                else if (gameDataObj.@class == "ItemData")
+                else if (gameDataObj.@class.Equals("ItemData"))
                 {
                     //Lots of things reference items, so instead of a long type check, just look for item != null.
                     foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => (iter.deleted == null || iter.deleted != "True") && iter.itemID.Equals(gameDataObj.uuid)))
@@ -1486,14 +1490,14 @@ namespace EvilWindowsEditor
         {
             if (gameDataObj != null)
             {
-                if (gameDataObj.@class == "HenchmanData")
+                if (gameDataObj.@class.Equals("HenchmanData"))
                 {
                     foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("HenchmanStatData") && iter.henchmanID.Equals(gameDataObj.uuid)))
                     {
                         gameObject.deleted = "True";
                     }
                 }
-                else if (gameDataObj.@class == "QuestData")
+                else if (gameDataObj.@class.Equals("QuestData"))
                 {
                     //This takes care of quest stat requirements, quest steps
                     foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.questID.Equals(gameDataObj.uuid)))

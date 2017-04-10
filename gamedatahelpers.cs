@@ -18,7 +18,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string itemID
 	{
-        get { if (item == null || item.Length==0) return ""; return item[0].Value;}
+        get { if (item == null || item.Length==0 || item[0].Value == null) return ""; return item[0].Value;}
 		set { 
             if (item == null)
 			{
@@ -31,7 +31,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string startingCharacterInfoID
     {
-        get { if (startingCharacterInfo == null || startingCharacterInfo.Length == 0) return ""; return startingCharacterInfo[0].Value; }
+        get { if (startingCharacterInfo == null || startingCharacterInfo.Length == 0 || startingCharacterInfo[0].Value==null) return ""; return startingCharacterInfo[0].Value; }
         set
         {
             if (startingCharacterInfo == null)
@@ -46,7 +46,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string henchmanID
     {
-        get { if (henchman == null || henchman.Length == 0) return ""; return henchman[0].Value; }
+        get { if (henchman == null || henchman.Length == 0 || henchman[0].Value==null) return ""; return henchman[0].Value; }
         set
         {
             if (henchman == null)
@@ -61,7 +61,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string statID
     {
-        get { if (stat == null || stat.Length == 0) return ""; return stat[0].Value; }
+        get { if (stat == null || stat.Length == 0 || stat[0].Value==null) return ""; return stat[0].Value; }
         set
         {
             if (stat == null)
@@ -76,7 +76,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string requiredLocationID
     {
-        get { if (requiredLocation == null || requiredLocation.Length == 0) return ""; return requiredLocation[0].Value; }
+        get { if (requiredLocation == null || requiredLocation.Length == 0 || requiredLocation[0].Value==null) return ""; return requiredLocation[0].Value; }
         set
         {
             if (requiredLocation == null)
@@ -91,7 +91,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string questStepChoiceID
     {
-        get { if (questStepChoice == null || questStepChoice.Length == 0) return ""; return questStepChoice[0].Value; }
+        get { if (questStepChoice == null || questStepChoice.Length == 0 || questStepChoice[0].Value==null) return ""; return questStepChoice[0].Value; }
         set
         {
             if (questStepChoice == null)
@@ -106,7 +106,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string questID
     {
-        get { if (quest == null || quest.Length == 0) return ""; return quest[0].Value; }
+        get { if (quest == null || quest.Length == 0 || quest[0].Value == null) return ""; return quest[0].Value; }
         set
         {
             if (quest == null)
@@ -121,7 +121,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string stepID
     {
-        get { if (step == null || step.Length == 0) return ""; return step[0].Value; }
+        get { if (step == null || step.Length == 0 || step[0].Value==null) return ""; return step[0].Value; }
         set
         {
             if (step == null)
@@ -136,7 +136,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string firstStepID
     {
-        get { if (firstStep == null || firstStep.Length == 0) return ""; return firstStep[0].Value; }
+        get { if (firstStep == null || firstStep.Length == 0 || firstStep[0].Value==null) return ""; return firstStep[0].Value; }
         set
         {
             if (firstStep == null)
@@ -167,7 +167,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string itemTypeID
     {
-        get { if (itemType == null || itemType.Length == 0) return ""; return itemType[0].Value; }
+        get { if (itemType == null || itemType.Length == 0 || itemType[0].Value==null) return ""; return itemType[0].Value; }
         set
         {
             if (itemType == null)
@@ -183,7 +183,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string startingQuestID
     {
-        get { if (startingQuest == null || startingQuest.Length == 0) return ""; return startingQuest[0].Value; }
+        get { if (startingQuest == null || startingQuest.Length == 0 || startingQuest[0].Value==null) return ""; return startingQuest[0].Value; }
         set
         {
             if (startingQuest == null)
@@ -199,7 +199,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string statGroupID
     {
-        get { if (statGroup == null || statGroup.Length == 0) return ""; return statGroup[0].Value; }
+        get { if (statGroup == null || statGroup.Length == 0 || statGroup[0].Value== null) return ""; return statGroup[0].Value; }
         set
         {
             if (statGroup == null)
@@ -215,7 +215,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string startingLocationID
     {
-        get { if (startingLocation == null || startingLocation.Length == 0) return ""; return startingLocation[0].Value; }
+        get { if (startingLocation == null || startingLocation.Length == 0 || startingLocation[0].Value==null) return ""; return startingLocation[0].Value; }
         set
         {
             if (startingLocation == null)
@@ -231,7 +231,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string associatedLocationID
     {
-        get { if (associatedLocation == null || associatedLocation.Length == 0) return ""; return associatedLocation[0].Value; }
+        get { if (associatedLocation == null || associatedLocation.Length == 0 || associatedLocation[0].Value==null) return ""; return associatedLocation[0].Value; }
         set
         {
             if (associatedLocation == null)
@@ -247,7 +247,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string unlockLocationID
     {
-        get { if (unlockLocation == null || unlockLocation.Length == 0) return ""; return unlockLocation[0].Value; }
+        get { if (unlockLocation == null || unlockLocation.Length == 0 || unlockLocation[0].Value==null) return ""; return unlockLocation[0].Value; }
         set
         {
             if (unlockLocation == null)
@@ -263,7 +263,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string moveToLocationID
     {
-        get { if (moveToLocation == null || moveToLocation.Length == 0) return ""; return moveToLocation[0].Value; }
+        get { if (moveToLocation == null || moveToLocation.Length == 0 || moveToLocation[0].Value==null) return ""; return moveToLocation[0].Value; }
         set
         {
             if (moveToLocation == null)
@@ -279,7 +279,7 @@ public partial class gamedataObject: INotifyPropertyChanged
     [XmlIgnore]
     public string associatedNPCID
     {
-        get { if (associatedNPC == null || associatedNPC.Length == 0) return ""; return associatedNPC[0].Value; }
+        get { if (associatedNPC == null || associatedNPC.Length == 0 || associatedNPC[0].Value==null) return ""; return associatedNPC[0].Value; }
         set
         {
             if (associatedNPC == null)

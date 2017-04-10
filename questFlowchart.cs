@@ -44,13 +44,15 @@ namespace EvilWindowsEditor
 			PseudoButton startingButton = null;
 			foreach (gamedataObject questStepObj in gdv.selectedQuestStepsObservable)
 			{
+                if (questStepObj.uuid.Equals(""))
+                    continue;
 				PseudoButton stepButton = new PseudoButton();
 				stepButton.associatedQuestStep = questStepObj;
                 stepButton.button.Content = questStepObj.name;
                 questButtons.Add(stepButton);
 				notYetUsedStepButtons.Add(stepButton);
 				uuidToStepButton.Add(questStepObj.uuid, stepButton);
-				if (questStepObj.uuid == gdv.gameData.firstStepID)
+				if (questStepObj.uuid.Equals(gdv.gameData.firstStepID))
 				{
 					startingButton = stepButton;
 				}
@@ -90,7 +92,7 @@ namespace EvilWindowsEditor
 					string stepUUID = stepButton.associatedQuestStep.uuid;
 
 					foreach (gamedataObject choiceObj in gdv.root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData") 
-                                                                                                && iter.deleted=="False" 
+                                                                                                && iter.deleted.Equals("False") 
                                                                                                 && iter.stepID.Equals(stepUUID)))
 					{
 						if (choiceObj.nextStep != null && choiceObj.nextStep.Count() > 0)
@@ -171,7 +173,7 @@ namespace EvilWindowsEditor
             foreach (PseudoButton currentButton in questButtons)
 			{
 				foreach (gamedataObject choiceObj in gdv.root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
-                                                                                          && iter.deleted=="False" 
+                                                                                          && iter.deleted.Equals("False") 
 										   												  && iter.stepID.Equals(((gamedataObject)currentButton.associatedQuestStep).uuid)))
 				{
 					if (choiceObj.nextStep != null && choiceObj.nextStep.Count() > 0)
@@ -187,20 +189,54 @@ namespace EvilWindowsEditor
                                 line.Visibility = System.Windows.Visibility.Visible;
                                 line.StrokeThickness = 2;
 
-                                var x1 = GetRight(currentButton.button);
+                                //var x1 = GetRight(currentButton.button);
                                 line.X1 = currentButton.left + currentButton.button.ActualWidth;
                                 line.X2 = nextStepButton.left;
+                                line.Y1 = currentButton.top + currentButton.button.ActualHeight / 2;
+                                line.Y2 = nextStepButton.top + nextStepButton.button.ActualHeight / 2;
+                                Children.Add(line);
+                                //Arrowhead:
+                                var arrowheadlength = 7;
+                                Point source = new Point(line.X1, line.Y1);
+                                Point destination = new Point(line.X2, line.Y2);
+                                Matrix rotatorone = new Matrix();
+                                Vector backvect = (source - destination);
+                                backvect.Normalize();
+                                backvect = backvect * arrowheadlength;
+                                rotatorone.Rotate(45);
+                                Line arrowlineone = new Line();
+                                arrowlineone.X1= line.X2;
+                                arrowlineone.Y1 = line.Y2;
+                                Point arrowlineoneend= new Point(line.X2,line.Y2) + backvect * rotatorone;
+                                arrowlineone.X2 = arrowlineoneend.X;
+                                arrowlineone.Y2 = arrowlineoneend.Y;
+                                Line arrowlinetwo = new Line();
+                                arrowlinetwo.X1 = line.X2;
+                                arrowlinetwo.Y1 = line.Y2;
+                                Matrix rotatortwo = new Matrix();
+                                rotatortwo.Rotate(-45);
+                                Point arrowlinetwoend = new Point(line.X2, line.Y2) + backvect * rotatortwo;
+                                arrowlinetwo.X2 = arrowlinetwoend.X;
+                                arrowlinetwo.Y2 = arrowlinetwoend.Y;
+
+                                arrowlineone.Visibility = System.Windows.Visibility.Visible;
+                                arrowlineone.StrokeThickness = 2;
+                                arrowlinetwo.Visibility = System.Windows.Visibility.Visible;
+                                arrowlinetwo.StrokeThickness = 2;
                                 if (line.X1 < line.X2)
                                 {
                                     line.Stroke = System.Windows.Media.Brushes.Black;
+                                    arrowlineone.Stroke = System.Windows.Media.Brushes.Black;
+                                    arrowlinetwo.Stroke = System.Windows.Media.Brushes.Black;
                                 }
                                 else
                                 {
                                     line.Stroke = System.Windows.Media.Brushes.DarkGray;
+                                    arrowlineone.Stroke = System.Windows.Media.Brushes.DarkGray;
+                                    arrowlinetwo.Stroke = System.Windows.Media.Brushes.DarkGray;
                                 }
-                                line.Y1 = currentButton.top + currentButton.button.ActualHeight / 2;
-                                line.Y2 = nextStepButton.top + nextStepButton.button.ActualHeight / 2;
-                                Children.Add(line);
+                                Children.Add(arrowlineone);
+                                Children.Add(arrowlinetwo);
                                 SetZIndex(line, 0);
                             }
                         }
