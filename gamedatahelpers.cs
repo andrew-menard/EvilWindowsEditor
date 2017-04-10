@@ -154,6 +154,8 @@ public partial class gamedataObject: INotifyPropertyChanged
 		get { if (nextStep == null || nextStep.Length == 0 || nextStep[0].Value==null) return ""; return nextStep[0].Value; }
 		set
 		{
+            if (value == null)  //When you repopulate the step pulldowns in the grid view because you've changed quests, all the choices suddenly point to something not valid, so they are force-changed to nulls!  This isn't good...
+                return;
 			if (nextStep == null)
 			{
 				nextStep = new gamedataObjectNextStep[1];
