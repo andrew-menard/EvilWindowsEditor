@@ -105,6 +105,10 @@
                                 </Border>
                             </StackPanel>
                         </Border>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding questVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>Quest Energy Cost:</Label>
+                            <TextBox Width="50" Text="{Binding questEnergyCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        </StackPanel>
                         <CheckBox Content="Equippable" IsChecked="{Binding equippable, Mode=TwoWay}" Visibility="{Binding equippableVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
                         <CheckBox Content="Quest is one-time only" IsChecked="{Binding oneTimeQuest, Mode=TwoWay}" Visibility="{Binding questVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
                         <CheckBox Content="Quest is force-granted when player meets requirements" IsChecked="{Binding questIsForceGranted, Mode=TwoWay}" Visibility="{Binding questVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"/>

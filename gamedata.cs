@@ -2,6 +2,7 @@
 // Originally built using auto-generation tool, but then went through serious changes and simplifications.
 //------------------------------------------------------------------------------
 
+using System;
 /// <remarks/>
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true)]
@@ -57,6 +58,7 @@ public partial class gamedataObject {
     private string oneTimeQuestField; //Effectively a bool
     private string questIsForceGrantedField; //Effectively a bool
     private string cooldownTimerField; //Minutes until quest available again for timed quests
+    private string questEnergyCostField;
     
     private gamedataObjectItem[] itemField;
 
@@ -202,7 +204,36 @@ public partial class gamedataObject {
             this.maximumField = value;
         }
     }
-    
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+    public string questEnergyCost
+    {
+        get
+        {
+            if (questEnergyCostField == null || questEnergyCostField.Equals(""))
+            {
+                return "0";
+            }
+            else
+            {
+                return questEnergyCostField;
+            }
+        }
+        set
+        {
+            int temp;
+            if (Int32.TryParse(value, out temp))
+            {
+                this.questEnergyCostField = temp.ToString();
+            }
+            else
+            {
+                this.questEnergyCostField = "0";
+            }
+            NotifyPropertyChanged("questEnergyCost");
+        }
+    }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
     public string equippable {

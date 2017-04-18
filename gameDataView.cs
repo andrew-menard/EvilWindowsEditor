@@ -670,6 +670,35 @@ namespace EvilWindowsEditor
                 }
             }
         }
+        public string questEnergyCost
+        {
+            get
+            {
+                if (gameDataObj == null)
+                {
+                    return "0";
+                }
+                else
+                {
+                    return gameDataObj.questEnergyCost;
+                }
+            }
+            set
+            {
+                if (gameDataObj != null)
+                {
+                    int temp;
+                    if (Int32.TryParse(value, out temp))
+                    {
+                        gameDataObj.questEnergyCost = Math.Max(temp, 0).ToString();
+                    }
+                    else
+                    {
+                        gameDataObj.questEnergyCost = "0";
+                    }
+                }
+            }
+        }
         public string cooldownTimer
         {
             get
