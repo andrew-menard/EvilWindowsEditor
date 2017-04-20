@@ -185,7 +185,12 @@ public partial class gamedataObject {
     [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
     public string minimum {
         get {
-            return this.minimumField;
+            if (this.minimumField == null || this.minimumField=="")
+            { return "0"; }
+            else
+            {
+                return this.minimumField;
+            }
         }
         set {
             this.minimumField = value;
@@ -196,7 +201,14 @@ public partial class gamedataObject {
     [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
     public string maximum {
         get {
-            return this.maximumField;
+            if (this.maximumField == null || this.maximumField=="")
+            {
+                return "0";
+            }
+            else
+            {
+                return this.maximumField;
+            }
         }
         set {
             this.maximumField = value;
@@ -658,7 +670,7 @@ public partial class gamedataObjectStartingCharacterInfo: objectReference
 public partial class gamedataObjectItem : objectReference
 {
 
-    public gamedataObjectItem() : base("StartingCharacterInfoData")
+    public gamedataObjectItem() : base("ItemData")
     {
     }
 }

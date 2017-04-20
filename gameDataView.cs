@@ -17,10 +17,50 @@ namespace EvilWindowsEditor
         {
             Children = new ObservableCollection<GameTreeItem>();
         }
+        public string MinValueSorter
+        {
+            get
+            {
+                if (minStatValue > 0|| maxStatValue >0)
+                {
+                    //Sorts by min value, then by max value, then by name
+                    return minStatValue.ToString("D8") + maxStatValue.ToString("D8") + Name;
+                }
+                else
+                { 
+                    return 99999999.ToString("D8") + 99999999.ToString() + Name;
+                }
+            }
+        }
+        private int minStatValue = 0;
+        public int MinStatValue {
+            get { return minStatValue; }
+            set { minStatValue = value; NotifyPropertyChanged("Name"); }
+        }
+
+        private int maxStatValue = 0;
+        public int MaxStatValue
+        {
+            get { return maxStatValue; }
+            set { maxStatValue = value; NotifyPropertyChanged("Name"); }
+        }
         public string Id { get { if (ObjectRef != null) { return ObjectRef.uuid; } else { return ""; } } }
         public gamedataObject ObjectRef { get; set; }
         private string _name;
-        public string Name { get { if (ObjectRef != null) { return ObjectRef.name; } else { return _name; } } set { _name = value; } }
+        public string Name
+        {
+            get {
+                if (ObjectRef != null)
+                {
+                    if (minStatValue == 0 && maxStatValue==0)
+                    { return ObjectRef.name; }
+                    else
+                    { return ObjectRef.name + "(requires " + minStatValue.ToString() + "-" +maxStatValue.ToString()+")"; }
+                }
+                else { return _name; }
+            }
+            set { _name = value; }
+        }
         public ObservableCollection<GameTreeItem> Children { get; set; }
         //Implementing INotifyPropertyChanged interface
         public event PropertyChangedEventHandler PropertyChanged;
@@ -111,6 +151,10 @@ namespace EvilWindowsEditor
                     itemTypes.Add(gameObject);
                 }
                 stats.Clear();
+                gamedataObject nullStat = new gamedataObject();
+                nullStat.uuid = "";
+                nullStat.name = "(none)";
+                stats.Add(nullStat); //Empty value so you can "unselect" things in the combo boxes
                 foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StatData") && iter.deleted == "False"))
                 {
                     stats.Add(gameObject);
@@ -238,6 +282,72 @@ namespace EvilWindowsEditor
                     NotifyPropertyChanged("alternateBackground");
                     NotifyPropertyChanged("SelectedQuestStep");
                 }
+            }
+        }
+        private string findQuestByStat;
+        public string FindQuestByStat
+        {
+            get
+            { return findQuestByStat; }
+            set
+            {
+                findQuestByStat = value;
+         
+                foreach (GameTreeItem iter in GameTree)
+                {
+                    if (iter.Name.Equals("Quest"))
+                    {
+                        foreach (GameTreeItem inneriter in iter.Children)
+                        {
+                            if (value=="")
+                            {
+                                inneriter.MinStatValue = 0;
+                                inneriter.MaxStatValue = 0;
+                            }
+                            else
+                            {
+                                inneriter.MinStatValue = 0;
+                                inneriter.MaxStatValue = 0;
+                                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(x => x.@class.Equals("QuestStatRequirementData")
+                                                                                                       && x.deleted.Equals("False")
+                                                                                                       && x.questID.Equals(inneriter.ObjectRef.uuid)
+                                                                                                       && x.statID.Equals(value)))
+                                {
+                                    Int32 temp;
+                                    if (Int32.TryParse(gameObject.minimum, out temp))
+                                    {
+                                        inneriter.MinStatValue = temp;
+                                    }
+                                    else { inneriter.MinStatValue = 0; }
+                                    if (Int32.TryParse(gameObject.maximum, out temp))
+                                    {
+                                        inneriter.MaxStatValue = temp;
+                                    }
+                                    else { inneriter.MaxStatValue = 0; }
+                                }
+                            }
+
+                        }
+                        if (value == "")
+                        {
+                            List<GameTreeItem> temp = iter.Children.OrderBy(g => g.Name).ToList<GameTreeItem>();
+                            ObservableCollection<GameTreeItem> sortedList = new ObservableCollection<GameTreeItem>();
+                            temp.ForEach(x => sortedList.Add(x));
+                            iter.Children = sortedList;
+                            iter.NotifyPropertyChanged("Children");
+                        }
+                        else
+                        {
+                            List<GameTreeItem> temp = iter.Children.OrderBy(g => g.MinValueSorter ).ToList<GameTreeItem>();
+                            ObservableCollection<GameTreeItem> sortedList = new ObservableCollection<GameTreeItem>();
+                            temp.ForEach(x => sortedList.Add(x));
+                            iter.Children=sortedList;
+                            iter.NotifyPropertyChanged("Children");
+                        }
+                        break;
+                    }
+                }
+
             }
         }
         public bool questStepChoiceDataVisible

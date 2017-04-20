@@ -113,7 +113,13 @@ namespace EvilWindowsEditor
             InitializeComponent();
             GameDataViewObject.PropertyChanged += GameDataViewObject_PropertyChanged;
         }
-
+        private void MenuItem_FindQuestByStat(object sender, RoutedEventArgs e)
+        {
+            // Instantiate the dialog box
+            FindQuestByStat dlg = new FindQuestByStat() { DataContext = this.DataContext, Owner=this};
+            // Open the dialog box modally 
+            dlg.ShowDialog();
+        }
         private void GameDataViewObject_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             //This feels dirty, as it kind of violates the proper separation of data from UI

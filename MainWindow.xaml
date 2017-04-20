@@ -38,6 +38,9 @@
                     <MenuItem Header="NPC" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateNPC"/>
                     <MenuItem Header="Startup Data" IsEnabled="{Binding canCreateStartingCharacterInfo, Mode=OneWay}" Click="MenuItem_CreateStartingCharacterInfo"/>
                 </MenuItem>
+                <MenuItem Header="_Sort">
+                    <MenuItem Header="_SortQuestsByRequiredStat..." IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_FindQuestByStat"/>
+                </MenuItem>
                 <MenuItem Header="_Help">
                     <MenuItem Header="_About" Click="MenuItem_About"/>
                 </MenuItem>
