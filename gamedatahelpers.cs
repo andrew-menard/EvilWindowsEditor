@@ -322,7 +322,8 @@ public partial class gamedataObject: INotifyPropertyChanged
             NotifyPropertyChanged("integerValue");
         }
     }
-	//Overriding ToString makes objects show their name in the debugger, which is generally easier; not used in actual code.
+    
+    //Overriding ToString makes objects show their name in the debugger, which is generally easier; not used in actual code.
     override public string ToString()
     {
         return name;
