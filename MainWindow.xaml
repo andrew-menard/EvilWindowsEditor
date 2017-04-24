@@ -161,6 +161,14 @@
                                           SelectedValue="{Binding statGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                             </ComboBox>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding statVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>Stat used as XP for this stat:</Label>
+                            <ComboBox Width="150" ItemsSource="{Binding Stats, Mode=OneWay}"  DisplayMemberPath="Name" 
+                                          SelectedValuePath="uuid"
+                                          IsSynchronizedWithCurrentItem="False" 
+                                          SelectedValue="{Binding xpStat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            </ComboBox>
+                        </StackPanel>
                         <StackPanel Orientation="Vertical" Visibility="{Binding henchmanVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
                             <StackPanel Orientation="Horizontal">
                                 <Label >Stats:</Label>
@@ -390,7 +398,19 @@
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Name" Binding="{Binding name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                                 <DataGridTextColumn Header="Description" Binding="{Binding description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                                <DataGridComboBoxColumn  Header = "Next Step" Width="200" 
+                                                <DataGridComboBoxColumn  Header = "Next Step on Success" Width="200" 
+                                                                 SelectedValueBinding = "{Binding nextStepID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                                 ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.selectedQuestStepsObservable, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 DisplayMemberPath="Name"
+                                                                 SelectedValuePath="uuid"/>
+                                                <DataGridComboBoxColumn  Header = "Stat to check" Width="200" 
+                                                                 SelectedValueBinding = "{Binding statID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                                 ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Stats, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 DisplayMemberPath="Name"
+                                                                 SelectedValuePath="uuid"/>
+                                                <DataGridTextColumn Header="Stat Target" Binding="{Binding statTarget, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                                <DataGridComboBoxColumn  Header = "Next Step on Failure" Width="200" 
                                                                  SelectedValueBinding = "{Binding nextStepID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                                  ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.selectedQuestStepsObservable, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"

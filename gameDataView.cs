@@ -531,7 +531,7 @@ namespace EvilWindowsEditor
                         selectedQuestStepsObservable.Clear();
                         gamedataObject nullStep = new gamedataObject();
                         nullStep.uuid = "";
-                        nullStep.name = "(none)";
+                        nullStep.name = "(End Quest)";
                         selectedQuestStepsObservable.Add(nullStep); //Empty value so you can "unselect" things in the combo boxes
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepData") && iter.questID.Equals(gameDataObj.uuid) && iter.deleted.Equals("False")))
                         {
@@ -1014,6 +1014,14 @@ namespace EvilWindowsEditor
             set
             {
                 gameDataObj.itemTypeID = value;
+            }
+        }
+        public string xpStat
+        {
+            get { if (gameDataObj == null) { return ""; } else return gameDataObj.xpStatID; }
+            set
+            {
+                gameDataObj.xpStatID = value;
             }
         }
         public string statGroup

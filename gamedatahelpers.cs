@@ -74,6 +74,21 @@ public partial class gamedataObject: INotifyPropertyChanged
         }
     }
     [XmlIgnore]
+    public string xpStatID
+    {
+        get { if (xpStat == null || xpStat.Length == 0 || xpStat[0].Value == null) return ""; return xpStat[0].Value; }
+        set
+        {
+            if (xpStat == null)
+            {
+                xpStat = new gamedataObjectStat[1];
+                xpStat[0] = new gamedataObjectStat();
+                xpStat[0].@class = "UUID";
+            }
+            xpStat[0].Value = value;
+        }
+    }
+    [XmlIgnore]
     public string requiredLocationID
     {
         get { if (requiredLocation == null || requiredLocation.Length == 0 || requiredLocation[0].Value==null) return ""; return requiredLocation[0].Value; }
@@ -131,6 +146,21 @@ public partial class gamedataObject: INotifyPropertyChanged
                 step[0].@class = "UUID";
             }
             step[0].Value = value;
+        }
+    }
+    [XmlIgnore]
+    public string failStepID
+    {
+        get { if (failStep == null || failStep.Length == 0 || failStep[0].Value == null) return ""; return failStep[0].Value; }
+        set
+        {
+            if (failStep == null)
+            {
+                failStep = new gamedataObjectStep[1];
+                failStep[0] = new gamedataObjectStep();
+                failStep[0].@class = "UUID";
+            }
+            failStep[0].Value = value;
         }
     }
     [XmlIgnore]
@@ -322,7 +352,34 @@ public partial class gamedataObject: INotifyPropertyChanged
             NotifyPropertyChanged("integerValue");
         }
     }
-    
+    [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+    public string statTarget
+    {
+        get
+        {
+            if (statTargetField == null || statTargetField.Equals(""))
+            {
+                return "0";
+            }
+            else
+            {
+                return statTargetField;
+            }
+        }
+        set
+        {
+            int temp;
+            if (Int32.TryParse(value, out temp))
+            {
+                this.statTargetField = temp.ToString();
+            }
+            else
+            {
+                this.statTarget = "0";
+            }
+            NotifyPropertyChanged("statTarget");
+        }
+    }
     //Overriding ToString makes objects show their name in the debugger, which is generally easier; not used in actual code.
     override public string ToString()
     {

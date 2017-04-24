@@ -49,6 +49,7 @@ public partial class gamedataObject {
     private string uuidField;
     
     private string valueField;
+    private string statTargetField;
     private string alternateBackgroundField;
 
     private string deletedField; //Effectively a boolean
@@ -65,7 +66,8 @@ public partial class gamedataObject {
     private gamedataObjectStartingCharacterInfo[] startingCharacterInfoField;
 
     private gamedataObjectStep[] stepField;
-    
+
+    private gamedataObjectStep[] failStepField;
     private gamedataObjectNextStep[] nextStepField;
     
     private gamedataObjectQuest[] questField;
@@ -73,7 +75,7 @@ public partial class gamedataObject {
     private gamedataObjectQuestStepChoice[] questStepChoiceField;
     
     private gamedataObjectStat[] statField;
-    
+    private gamedataObjectStat[] xpStatField;
     private gamedataObjectHenchman[] henchmanField;
     
     private gamedataObjectFirstStep[] firstStepField;
@@ -287,7 +289,7 @@ public partial class gamedataObject {
             this.valueField = value;
         }
     }
-
+    
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
     public string deleted
@@ -444,7 +446,21 @@ public partial class gamedataObject {
             this.stepField = value;
         }
     }
-    
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlElementAttribute("failStep", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
+    public gamedataObjectStep[] failStep
+    {
+        get
+        {
+            return this.failStepField;
+        }
+        set
+        {
+            this.failStepField = value;
+        }
+    }
+
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("nextStep", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
     public gamedataObjectNextStep[] nextStep {
@@ -488,7 +504,20 @@ public partial class gamedataObject {
             this.statField = value;
         }
     }
-    
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlElementAttribute("xpStat", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
+    public gamedataObjectStat[] xpStat
+    {
+        get
+        {
+            return this.xpStatField;
+        }
+        set
+        {
+            this.xpStatField = value;
+        }
+    }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("henchman", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
     public gamedataObjectHenchman[] henchman {
