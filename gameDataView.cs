@@ -44,7 +44,8 @@ namespace EvilWindowsEditor
             get { return maxStatValue; }
             set { maxStatValue = value; NotifyPropertyChanged("Name"); }
         }
-        public string Id { get { if (ObjectRef != null) { return ObjectRef.uuid; } else { return ""; } } }
+        private string id="";
+        public string Id { get { if (ObjectRef != null) { return ObjectRef.uuid; } else { return id; } } set { id = value; } }
         public gamedataObject ObjectRef { get; set; }
         private string _name;
         public string Name
@@ -59,7 +60,7 @@ namespace EvilWindowsEditor
                 }
                 else { return _name; }
             }
-            set { _name = value; }
+            set { _name = value; NotifyPropertyChanged("Name"); }
         }
         public ObservableCollection<GameTreeItem> Children { get; set; }
         //Implementing INotifyPropertyChanged interface
@@ -160,6 +161,10 @@ namespace EvilWindowsEditor
                     stats.Add(gameObject);
                 }
                 statGroups.Clear();
+                gamedataObject nullStatGroup = new gamedataObject();
+                nullStatGroup.uuid = "";
+                nullStatGroup.name = "(none)";
+                statGroups.Add(nullStatGroup); //Empty value so you can "unselect" things in the combo boxes
                 foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StatGroupData") && iter.deleted == "False"))
                 {
                     statGroups.Add(gameObject);
@@ -205,12 +210,48 @@ namespace EvilWindowsEditor
                     GameTreeItem classNode = new GameTreeItem() { Name = elementClassShortName, ObjectRef = null };
                     if (elementsByType.ContainsKey(elementClass))
                     {
-                        foreach (gamedataObject element in elementsByType[elementClass])
+                        if (elementClass == "StatData")
                         {
-                            if (element.deleted != null && element.deleted != "True")
+
+                            foreach (gamedataObject element in elementsByType["StatGroupData"])
                             {
-                                GameTreeItem childNode = new GameTreeItem() { ObjectRef = element };
-                                classNode.Children.Add(childNode);
+                                if (element.deleted != null && element.deleted != "True")
+                                {
+                                    GameTreeItem statGroupNode = new GameTreeItem() { Name = element.Name, ObjectRef = null, Id=element.uuid };
+                                    foreach (gamedataObject statElement in elementsByType["StatData"])
+                                    {
+                                        if (statElement.deleted != null && statElement.deleted != "True" && statElement.statGroupID == element.uuid)
+                                        {
+                                            GameTreeItem statNode = new GameTreeItem() { ObjectRef = statElement };
+                                            statGroupNode.Children.Add(statNode);
+                                        }
+                                    }
+                                    classNode.Children.Add(statGroupNode);
+                                }
+                            }
+                            {
+
+                                GameTreeItem statGroupNode = new GameTreeItem() { Name = "(none)", ObjectRef = null };
+                                foreach (gamedataObject statElement in elementsByType["StatData"])
+                                {
+                                    if (statElement.deleted != null && statElement.deleted != "True" && statElement.statGroupID == "")
+                                    {
+                                        GameTreeItem statNode = new GameTreeItem() { ObjectRef = statElement };
+                                        statGroupNode.Children.Add(statNode);
+                                    }
+                                }
+                                classNode.Children.Add(statGroupNode);
+                            }
+                        }
+                        else
+                        {
+                            foreach (gamedataObject element in elementsByType[elementClass])
+                            {
+                                if (element.deleted != null && element.deleted != "True")
+                                {
+                                    GameTreeItem childNode = new GameTreeItem() { ObjectRef = element };
+                                    classNode.Children.Add(childNode);
+                                }
                             }
                         }
                     }
@@ -589,6 +630,22 @@ namespace EvilWindowsEditor
                     gameDataObj.name = value;
                     gameDataObj.NotifyPropertyChanged("name");
                     SelectedGameTreeItem.NotifyPropertyChanged("Name");
+                    if (gameDataObj.@class=="StatGroupData")
+                    {
+                        foreach (GameTreeItem outerItem in gameTree)
+                        {
+                            if (outerItem.Name=="Stat")
+                            {
+                                foreach (GameTreeItem innerItem in outerItem.Children)
+                                {
+                                    if (innerItem.Id == gameDataObj.uuid)
+                                    {
+                                        innerItem.Name = gameDataObj.Name;
+                                    }
+                                }
+                            }
+                        }
+                    }
                     //updateObjectTreeForNameChange();
                 }
             }
@@ -936,6 +993,29 @@ namespace EvilWindowsEditor
             set
             {
                 gameDataObj.statGroupID = value;
+                //On stat group changing, the selected stat needs to jump to a different stat group category.
+                GameTreeItem localGameTreeItem = selectedGameTreeItem;
+                foreach (GameTreeItem iter in GameTree)
+                {
+                    if (iter.Name.Equals("Stat"))
+                    {
+                        foreach (GameTreeItem statGroupIter in iter.Children)
+                        {
+                            if (statGroupIter.Children.Contains(selectedGameTreeItem))
+                            {
+                                statGroupIter.Children.Remove(selectedGameTreeItem);
+                            }
+                        }
+                        foreach (GameTreeItem statGroupIter in iter.Children)
+                        {
+                            if (statGroupIter.Id.Equals(value))
+                            {
+                                statGroupIter.Children.Add(localGameTreeItem);
+                            }
+                        }
+                        selectedGameTreeItem = localGameTreeItem;//We need to reselect the item, because pulling it out of the tree un-selected it!
+                    }
+                }
             }
         }
         public bool itemTypeVisible
@@ -1199,6 +1279,16 @@ namespace EvilWindowsEditor
             if (objectType.Equals("StatGroup"))
             {
                 statGroups.Add(newObj);
+                //Also add category to stats on the tree
+                foreach (GameTreeItem headernode in gameTree)
+                {
+                    if (headernode.Name == "Stat")
+                    {
+                        GameTreeItem statGroupNode = new GameTreeItem() { Name = newObj.Name, ObjectRef = null, Id = newObj.uuid };
+                        headernode.Children.Add(statGroupNode);
+                    }
+                }
+
             }
             if (objectType.Equals("Quest"))
             {
@@ -1221,11 +1311,36 @@ namespace EvilWindowsEditor
             GameTreeItem childNode = new GameTreeItem() { ObjectRef = newObj };
             foreach (GameTreeItem iter in GameTree)
             {
-                if (iter.Name.Equals(objectType))
+                if (objectType.Equals("Stat"))
                 {
-                    foundTreeItem = true;
-                    iter.Children.Add(childNode);
-                    break;
+                    if (iter.Name.Equals("Stat"))
+                    {
+                        foreach (GameTreeItem statGroupIter in iter.Children)
+                        {
+                            if (statGroupIter.Id.Equals(""))
+                            {
+                                foundTreeItem = true;
+                                statGroupIter.Children.Add(childNode);
+                                break;
+                            }
+                        }
+                        if (!foundTreeItem)
+                        {
+                            GameTreeItem statGroupNode = new GameTreeItem() { Name = "(none)", ObjectRef = null, Id = null };
+                            statGroupNode.Children.Add(childNode);
+                            iter.Children.Add(statGroupNode);
+                            foundTreeItem = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (iter.Name.Equals(objectType))
+                    {
+                        foundTreeItem = true;
+                        iter.Children.Add(childNode);
+                        break;
+                    }
                 }
             }
             if (!foundTreeItem)
@@ -1652,8 +1767,8 @@ namespace EvilWindowsEditor
                     return;
                 }
             }
-                //If selected in the tree view, unselect it
-                if (SelectedGameTreeItem.ObjectRef.Equals(objToDelete))
+            //If selected in the tree view, unselect it
+            if (SelectedGameTreeItem.ObjectRef.Equals(objToDelete))
             {
                 SelectedGameTreeItem = null;
             }
@@ -1664,137 +1779,166 @@ namespace EvilWindowsEditor
             {
                 foreach (GameTreeItem childnode in node.Children)
                 {
-                    if ((childnode.ObjectRef).Equals(objToDelete))
+                    if (objToDelete.@class == "StatData")
                     {
-                        node.Children.Remove(childnode);
-                        break;
+                        //Stats are a second level down, because they are grouped by statgroup
+                        foreach (GameTreeItem grandchildnode in childnode.Children)
+                        {
+                            if ((grandchildnode.ObjectRef).Equals(objToDelete))
+                            {
+                                childnode.Children.Remove(grandchildnode);
+                                break;
+                            }
+                        }
+                    }
+                    else if (objToDelete.@class == "StatGroupData")
+                    {
+                        //Delete both the stat group element, and the stat group category under stats
+                        if ((childnode.ObjectRef).Equals(objToDelete))
+                        {
+                            node.Children.Remove(childnode);
+                            break;
+                        }
+                        if (childnode.Id.Equals(objToDelete.uuid))
+                        {
+                            node.Children.Remove(childnode);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if ((childnode.ObjectRef).Equals(objToDelete))
+                        {
+                            node.Children.Remove(childnode);
+                            break;
+                        }
                     }
                 }
-            }
-            //Remove object from any relevant combo boxes
-            if (objToDelete.@class.Equals("ItemTypeData"))
-            {
-                itemTypes.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("StatGroupData"))
-            {
-                StatGroups.Remove(objToDelete);
-            }
-            //Remove object from relevant sub-displays
-            if (objToDelete.@class.Equals("HenchmanStatData"))
-            {
-                henchmanStats.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("ItemStatModifierData"))
-            {
-                itemStatModifiersObservable.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("StartingCharacterInfoStatModifierData"))
-            {
-                startingCharacterStatModifiersObservable.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("QuestStatRequirementData"))
-            {
-                questStatRequirementsObservable.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("QuestStepChoiceData"))
-            {
-                selectedQuestStepChoicesObservable.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("QuestStepStatGrantData"))
-            {
-                selectedQuestStepStatGrantsObservable.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("QuestStepItemGrantData"))
-            {
-                selectedQuestStepItemGrantsObservable.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("QuestStepHenchmanGrantData"))
-            {
-                selectedQuestStepHenchmanGrantsObservable.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("QuestStepChoiceStatGrantData"))
-            {
-                selectedQuestStepChoiceStatGrantsObservable.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("QuestStepChoiceStatRequirementData"))
-            {
-                selectedQuestStepChoiceStatRequirementsObservable.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("QuestStepChoiceItemGrantData"))
-            {
-                selectedQuestStepChoiceItemGrantsObservable.Remove(objToDelete);
-            }
-            if (objToDelete.@class.Equals("QuestStepChoiceHenchmanGrantData"))
-            {
-                selectedQuestStepChoiceHenchmanGrantsObservable.Remove(objToDelete);
-            }
-
-            if (objToDelete.@class.Equals("QuestStepData"))
-            {
-                if (selectedQuestStepsObservable.Contains(objToDelete))
+                //Remove object from any relevant combo boxes
+                if (objToDelete.@class.Equals("ItemTypeData"))
                 {
-                    selectedQuestStepsObservable.Remove(objToDelete);
+                    itemTypes.Remove(objToDelete);
                 }
-                SelectedQuestStep = null; //Unselect this quest step, moving you back to the flowchart; must come after removing it from the selected quest steps, or it will still be on the flowchart.
-                //If you delete a quest step, auto-delete all the dependent stuff.  
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
-                                                                                               && (iter.deleted == null || iter.deleted.Equals("False"))
-                                                                                               && iter.nextStepID.Equals(objToDelete.uuid)))
+                if (objToDelete.@class.Equals("StatGroupData"))
                 {
-                    gameObject.nextStepID = "";
+                    StatGroups.Remove(objToDelete);
+                }
+                //Remove object from relevant sub-displays
+                if (objToDelete.@class.Equals("HenchmanStatData"))
+                {
+                    henchmanStats.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("ItemStatModifierData"))
+                {
+                    itemStatModifiersObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("StartingCharacterInfoStatModifierData"))
+                {
+                    startingCharacterStatModifiersObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("QuestStatRequirementData"))
+                {
+                    questStatRequirementsObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("QuestStepChoiceData"))
+                {
+                    selectedQuestStepChoicesObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("QuestStepStatGrantData"))
+                {
+                    selectedQuestStepStatGrantsObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("QuestStepItemGrantData"))
+                {
+                    selectedQuestStepItemGrantsObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("QuestStepHenchmanGrantData"))
+                {
+                    selectedQuestStepHenchmanGrantsObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("QuestStepChoiceStatGrantData"))
+                {
+                    selectedQuestStepChoiceStatGrantsObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("QuestStepChoiceStatRequirementData"))
+                {
+                    selectedQuestStepChoiceStatRequirementsObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("QuestStepChoiceItemGrantData"))
+                {
+                    selectedQuestStepChoiceItemGrantsObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("QuestStepChoiceHenchmanGrantData"))
+                {
+                    selectedQuestStepChoiceHenchmanGrantsObservable.Remove(objToDelete);
                 }
 
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
-                                                                                               && (iter.deleted == null || iter.deleted.Equals("False"))
-                                                                                               && iter.stepID.Equals(objToDelete.uuid)))
+                if (objToDelete.@class.Equals("QuestStepData"))
                 {
-                    gameObject.deleted = "True";
+                    if (selectedQuestStepsObservable.Contains(objToDelete))
+                    {
+                        selectedQuestStepsObservable.Remove(objToDelete);
+                    }
+                    SelectedQuestStep = null; //Unselect this quest step, moving you back to the flowchart; must come after removing it from the selected quest steps, or it will still be on the flowchart.
+                                              //If you delete a quest step, auto-delete all the dependent stuff.  
+                    foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
+                                                                                                   && (iter.deleted == null || iter.deleted.Equals("False"))
+                                                                                                   && iter.nextStepID.Equals(objToDelete.uuid)))
+                    {
+                        gameObject.nextStepID = "";
+                    }
 
-                    foreach (gamedataObject innerGameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceStatRequirementData")
+                    foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
                                                                                                    && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                    && iter.stepID.Equals(objToDelete.uuid)))
                     {
-                        innerGameObject.deleted = "True";
+                        gameObject.deleted = "True";
+
+                        foreach (gamedataObject innerGameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceStatRequirementData")
+                                                                                                       && (iter.deleted == null || iter.deleted.Equals("False"))
+                                                                                                       && iter.stepID.Equals(objToDelete.uuid)))
+                        {
+                            innerGameObject.deleted = "True";
+                        }
+                        foreach (gamedataObject innerGameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceItemGrantData")
+                                                                                                       && (iter.deleted == null || iter.deleted.Equals("False"))
+                                                                                                       && iter.stepID.Equals(objToDelete.uuid)))
+                        {
+                            innerGameObject.deleted = "True";
+                        }
+
+                        foreach (gamedataObject innerGameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceStatGrantData")
+                                                                                                       && (iter.deleted == null || iter.deleted.Equals("False"))
+                                                                                                       && iter.stepID.Equals(objToDelete.uuid)))
+                        {
+                            innerGameObject.deleted = "True";
+                        }
+                        foreach (gamedataObject innerGameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceHenchmanGrantData")
+                                                                                                       && (iter.deleted == null || iter.deleted.Equals("False"))
+                                                                                                       && iter.stepID.Equals(objToDelete.uuid)))
+                        {
+                            innerGameObject.deleted = "True";
+                        }
                     }
-                    foreach (gamedataObject innerGameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceItemGrantData")
+                    foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepItemGrantData")
                                                                                                    && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                    && iter.stepID.Equals(objToDelete.uuid)))
                     {
-                        innerGameObject.deleted = "True";
+                        gameObject.deleted = "True";
                     }
 
-                    foreach (gamedataObject innerGameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceStatGrantData")
+                    foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepStatGrantData")
                                                                                                    && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                    && iter.stepID.Equals(objToDelete.uuid)))
                     {
-                        innerGameObject.deleted = "True";
+                        gameObject.deleted = "True";
                     }
-                    foreach (gamedataObject innerGameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceHenchmanGrantData")
+                    foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepHenchmanGrantData")
                                                                                                    && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                    && iter.stepID.Equals(objToDelete.uuid)))
                     {
-                        innerGameObject.deleted = "True";
+                        gameObject.deleted = "True";
                     }
-                }
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepItemGrantData")
-                                                                                               && (iter.deleted == null || iter.deleted.Equals("False"))
-                                                                                               && iter.stepID.Equals(objToDelete.uuid)))
-                {
-                    gameObject.deleted = "True";
-                }
-
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepStatGrantData")
-                                                                                               && (iter.deleted == null || iter.deleted.Equals("False"))
-                                                                                               && iter.stepID.Equals(objToDelete.uuid)))
-                {
-                    gameObject.deleted = "True";
-                }
-                foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepHenchmanGrantData")
-                                                                                               && (iter.deleted == null || iter.deleted.Equals("False"))
-                                                                                               && iter.stepID.Equals(objToDelete.uuid)))
-                {
-                    gameObject.deleted = "True";
                 }
             }
         }
