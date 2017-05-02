@@ -508,14 +508,19 @@ namespace EvilWindowsEditor
                     if (gameDataObj != null && gameDataObj.@class.Equals("QuestData"))
                     {
                         //If this is an quest, populate the list of relevant quest stat requirements.
-                        questStatRequirements.Clear();
                         questStatRequirementsObservable.Clear();
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStatRequirementData")
                                                                                                && iter.deleted.Equals("False")
                                                                                                && iter.questID.Equals(gameDataObj.uuid)))
                         {
-                            questStatRequirements.Add(gameObject);
                             questStatRequirementsObservable.Add(gameObject);
+                        }
+                        questItemRequirementsObservable.Clear();
+                        foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestItemRequirementData")
+                                                                                               && iter.deleted.Equals("False")
+                                                                                               && iter.questID.Equals(gameDataObj.uuid)))
+                        {
+                            questItemRequirementsObservable.Add(gameObject);
                         }
                         _selectedQuestStep = null; //Upon selecting a quest you should initially go to flowchart view.
 
@@ -1198,14 +1203,14 @@ namespace EvilWindowsEditor
                 NotifyPropertyChanged("questStepsObservable");
             }
         }
-        private ObservableCollection<gamedataObject> _questStatRequirements;
-        public ObservableCollection<gamedataObject> questStatRequirements
+        private ObservableCollection<gamedataObject> _questItemRequirementsObservable;
+        public ObservableCollection<gamedataObject> questItemRequirementsObservable
         {
-            get { return _questStatRequirements; }
+            get { return _questItemRequirementsObservable; }
             set
             {
-                _questStatRequirements = value;
-                NotifyPropertyChanged("questStatRequirements");
+                _questItemRequirementsObservable = value;
+                NotifyPropertyChanged("questItemRequirementsObservable");
             }
         }
         private ObservableCollection<gamedataObject> _itemStatModifiersObservable;
@@ -1434,8 +1439,20 @@ namespace EvilWindowsEditor
             newStatReq.statID = stats.First().uuid;
             newStatReq.minimum = "0";
             newStatReq.maximum = "0";
-            _questStatRequirements.Add(newStatReq);
             _questStatRequirementsObservable.Add(newStatReq);
+            var newRootItems = root.Items.ToList<gamedataObject>();
+            newRootItems.Add(newStatReq);
+            root.Items = newRootItems.ToArray();
+            allObjects[newStatReq.uuid] = newStatReq;
+        }
+        public void addNewQuestItemRequirement()
+        {
+            gamedataObject newStatReq = new gamedataObject();
+            newStatReq.@class = "QuestItemRequirementData";
+            newStatReq.questID = gameData.uuid;
+            newStatReq.itemID = items.First().uuid;
+            newStatReq.value = "0";
+            _questItemRequirementsObservable.Add(newStatReq);
             var newRootItems = root.Items.ToList<gamedataObject>();
             newRootItems.Add(newStatReq);
             root.Items = newRootItems.ToArray();
@@ -1831,7 +1848,7 @@ namespace EvilWindowsEditor
                     else if (objToDelete.@class == "StatGroupData")
                     {
                         //Delete both the stat group element, and the stat group category under stats
-                        if ((childnode.ObjectRef).Equals(objToDelete))
+                        if (childnode.ObjectRef!=null&&(childnode.ObjectRef).Equals(objToDelete))
                         {
                             node.Children.Remove(childnode);
                             break;
@@ -1844,7 +1861,7 @@ namespace EvilWindowsEditor
                     }
                     else
                     {
-                        if ((childnode.ObjectRef).Equals(objToDelete))
+                        if (childnode.ObjectRef!=null&&(childnode.ObjectRef).Equals(objToDelete))
                         {
                             node.Children.Remove(childnode);
                             break;
@@ -1876,6 +1893,10 @@ namespace EvilWindowsEditor
                 if (objToDelete.@class.Equals("QuestStatRequirementData"))
                 {
                     questStatRequirementsObservable.Remove(objToDelete);
+                }
+                if (objToDelete.@class.Equals("QuestItemRequirementData"))
+                {
+                    questItemRequirementsObservable.Remove(objToDelete);
                 }
                 if (objToDelete.@class.Equals("QuestStepChoiceData"))
                 {
@@ -1990,9 +2011,9 @@ namespace EvilWindowsEditor
 			_henchmanStats = new ObservableCollection<gamedataObject>();
 			_itemStatModifiersObservable = new ObservableCollection<gamedataObject>();
             _startingCharacterStatModifiersObservable = new ObservableCollection<gamedataObject>();
-            _questStatRequirements = new ObservableCollection<gamedataObject>();
 			_questStatRequirementsObservable = new ObservableCollection<gamedataObject>();
-			_selectedQuestStepChoicesObservable = new ObservableCollection<gamedataObject>();
+            _questItemRequirementsObservable = new ObservableCollection<gamedataObject>();
+            _selectedQuestStepChoicesObservable = new ObservableCollection<gamedataObject>();
             _selectedQuestStepItemGrantsObservable = new ObservableCollection<gamedataObject>();
             _selectedQuestStepStatGrantsObservable = new ObservableCollection<gamedataObject>();
             _selectedQuestStepHenchmanGrantsObservable = new ObservableCollection<gamedataObject>();

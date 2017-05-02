@@ -251,6 +251,26 @@
                             </StackPanel>
                         </StackPanel>
 
+                        <StackPanel Orientation="Vertical" Visibility="{Binding questVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Label >Item Requirements:</Label>
+                                <Button Click="AddQuestItemRequirementButton_Click">Add new Item Requirement</Button>
+                                <Button Click="DeleteSelectedQuestItemRequirementButton_Click">Delete selected Item Requirement</Button>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <DataGrid ItemsSource="{Binding questItemRequirementsObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
+                                          CanUserDeleteRows="False" CanUserSortColumns="True" x:Name="QuestItemRequirementGridRoot">
+                                    <DataGrid.Columns>
+                                        <DataGridComboBoxColumn  Header = "Stat" Width="200" 
+                                                                 SelectedValueBinding = "{Binding itemID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                                 ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Items, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 DisplayMemberPath="Name"
+                                                                 SelectedValuePath="uuid"/>
+                                        <DataGridTextColumn Header = "Number required" Binding = "{Binding value}" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </StackPanel>
                         <Border BorderBrush="Black" BorderThickness="0 5 0 0"  Visibility="{Binding questStepPanelVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}" >
                             <StackPanel x:Name="QuestStepPanel" Orientation="Vertical" Margin="10,0,0,0" Background="Beige">
                                 <Grid>
@@ -474,7 +494,7 @@
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn  Header = "Item" Width="200" 
                                                                  SelectedValueBinding = "{Binding itemID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                                 ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Stats, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                 ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Items, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>
                                                 <DataGridTextColumn Header = "Number" Binding = "{Binding integerValue}" />
