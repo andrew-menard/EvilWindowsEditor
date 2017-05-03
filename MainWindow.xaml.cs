@@ -281,6 +281,19 @@ namespace EvilWindowsEditor
                 GameDataViewObject.deleteObject(selected as gamedataObject);
             }
         }
+        private void AddQuestItemRequirementButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewQuestItemRequirement();
+        }
+        private void DeleteSelectedQuestItemRequirementButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestItemRequirementGridRoot");
+            object selected = (dgr as DataGrid).SelectedItem;
+            if (selected != null)
+            {
+                GameDataViewObject.deleteObject(selected as gamedataObject);
+            }
+        }
         private void AddQuestStepItemGrantButton_Click(object sender, RoutedEventArgs e)
         {
             GameDataViewObject.addNewQuestStepItemGrant();
