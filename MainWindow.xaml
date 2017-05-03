@@ -184,7 +184,7 @@
                                                                      ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.Stats, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                      DisplayMemberPath="Name"
                                                                      SelectedValuePath="uuid"/>
-                                        <DataGridTextColumn Header = "Value" Binding = "{Binding value}" />
+                                        <DataGridTextColumn Header = "Value" Binding = "{Binding baseValue}" />
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </StackPanel>
@@ -411,7 +411,7 @@
                                                 <DataGridTextColumn Header="Stat Target" Binding="{Binding statTarget, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                                                 <DataGridComboBoxColumn  Header = "Next Step on Failure" Width="200" 
-                                                                 SelectedValueBinding = "{Binding nextStepID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                                 SelectedValueBinding = "{Binding failStepID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                                  ItemsSource = "{Binding Source={StaticResource ProxyElement}, Path=DataContext.selectedQuestStepsObservable, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>

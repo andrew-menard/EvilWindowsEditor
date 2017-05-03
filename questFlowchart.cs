@@ -31,6 +31,82 @@ namespace EvilWindowsEditor
             questButtons.OrderBy(b=>b.column * 1000 + b.row);//Since there shouldn't ever be more than 1000 rows, this sorts by column first, then row.  There had better not be any thousand-step quests in this game...
 			uuidToStepButton = new Dictionary<string, PseudoButton>();
 		}
+        private void drawArrow(PseudoButton sourceButton, PseudoButton destinationButton, Boolean successArrow)
+        {
+
+            Line line = new Line();
+            line.Visibility = System.Windows.Visibility.Visible;
+            line.StrokeThickness = 2;
+
+            //var x1 = GetRight(currentButton.button);
+            line.X1 = sourceButton.left + sourceButton.button.ActualWidth;
+            line.X2 = destinationButton.left;
+            line.Y1 = sourceButton.top + sourceButton.button.ActualHeight / 2;
+            line.Y2 = destinationButton.top + destinationButton.button.ActualHeight / 2;
+            Children.Add(line);
+            //Arrowhead:
+            var arrowheadlength = 7;
+            Point source = new Point(line.X1, line.Y1);
+            Point destination = new Point(line.X2, line.Y2);
+            Matrix rotatorone = new Matrix();
+            Vector backvect = (source - destination);
+            backvect.Normalize();
+            backvect = backvect * arrowheadlength;
+            rotatorone.Rotate(45);
+            Line arrowlineone = new Line();
+            arrowlineone.X1 = line.X2;
+            arrowlineone.Y1 = line.Y2;
+            Point arrowlineoneend = new Point(line.X2, line.Y2) + backvect * rotatorone;
+            arrowlineone.X2 = arrowlineoneend.X;
+            arrowlineone.Y2 = arrowlineoneend.Y;
+            Line arrowlinetwo = new Line();
+            arrowlinetwo.X1 = line.X2;
+            arrowlinetwo.Y1 = line.Y2;
+            Matrix rotatortwo = new Matrix();
+            rotatortwo.Rotate(-45);
+            Point arrowlinetwoend = new Point(line.X2, line.Y2) + backvect * rotatortwo;
+            arrowlinetwo.X2 = arrowlinetwoend.X;
+            arrowlinetwo.Y2 = arrowlinetwoend.Y;
+
+            arrowlineone.Visibility = System.Windows.Visibility.Visible;
+            arrowlineone.StrokeThickness = 2;
+            arrowlinetwo.Visibility = System.Windows.Visibility.Visible;
+            arrowlinetwo.StrokeThickness = 2;
+            if (line.X1 < line.X2)
+            {
+                if (successArrow)
+                {
+                    line.Stroke = System.Windows.Media.Brushes.Black;
+                    arrowlineone.Stroke = System.Windows.Media.Brushes.Black;
+                    arrowlinetwo.Stroke = System.Windows.Media.Brushes.Black;
+                }
+                else
+                {
+                    line.Stroke = System.Windows.Media.Brushes.Red;
+                    arrowlineone.Stroke = System.Windows.Media.Brushes.Red;
+                    arrowlinetwo.Stroke = System.Windows.Media.Brushes.Red;
+                }
+            }
+            else
+            {
+                if (successArrow)
+                {
+                    line.Stroke = System.Windows.Media.Brushes.DarkGray;
+                    arrowlineone.Stroke = System.Windows.Media.Brushes.DarkGray;
+                    arrowlinetwo.Stroke = System.Windows.Media.Brushes.DarkGray;
+                }
+                else
+                {
+                    line.Stroke = System.Windows.Media.Brushes.PaleVioletRed;
+                    arrowlineone.Stroke = System.Windows.Media.Brushes.PaleVioletRed;
+                    arrowlinetwo.Stroke = System.Windows.Media.Brushes.PaleVioletRed;
+                }
+            }
+            Children.Add(arrowlineone);
+            Children.Add(arrowlinetwo);
+            SetZIndex(line, 0);
+        }
+    
 		public void BuildFlowchart()
 		{
             var gdv = DataContext as gameDataView;
@@ -97,7 +173,7 @@ namespace EvilWindowsEditor
 					{
 						if (choiceObj.nextStep != null && choiceObj.nextStep.Count() > 0)
 						{
-							string nextStepUUID = choiceObj.nextStep[0].Value;
+							string nextStepUUID = choiceObj.nextStepID;
 							PseudoButton nextStepButton = null;
 							foreach (PseudoButton iterButton in notYetUsedStepButtons)
 							{
@@ -111,10 +187,25 @@ namespace EvilWindowsEditor
 							if (nextStepButton != null)
 							{
 								newColumn.Add(nextStepButton);
-							}
-						}
-					}
-				}
+                            }
+                            string failStepUUID = choiceObj.failStepID;
+                            PseudoButton failStepButton = null;
+                            foreach (PseudoButton iterButton in notYetUsedStepButtons)
+                            {
+                                if (iterButton.associatedQuestStep.uuid.Equals(failStepUUID))
+                                {
+                                    failStepButton = iterButton;
+                                    notYetUsedStepButtons.Remove(iterButton);
+                                    break;
+                                }
+                            }
+                            if (failStepButton != null)
+                            {
+                                newColumn.Add(failStepButton);
+                            }
+                        }
+                    }
+                }
 				if (newColumn.Count() == 0)
 				{
 					lastColumnEmpty = true;
@@ -172,76 +263,32 @@ namespace EvilWindowsEditor
             }
             foreach (PseudoButton currentButton in questButtons)
 			{
-				foreach (gamedataObject choiceObj in gdv.root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
-                                                                                          && iter.deleted.Equals("False") 
-										   												  && iter.stepID.Equals(((gamedataObject)currentButton.associatedQuestStep).uuid)))
-				{
-					if (choiceObj.nextStep != null && choiceObj.nextStep.Count() > 0)
-					{
-						string nextStepUUID = choiceObj.nextStepID;
-                        if (nextStepUUID != null && nextStepUUID!="")
+                foreach (gamedataObject choiceObj in gdv.root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
+                                                                                          && iter.deleted.Equals("False")
+                                                                                             && iter.stepID.Equals(((gamedataObject)currentButton.associatedQuestStep).uuid)))
+                {
+                    string nextStepUUID = choiceObj.nextStepID;
+                    if (nextStepUUID != null && nextStepUUID != "")
+                    {
+                        PseudoButton nextStepButton = null;
+                        uuidToStepButton.TryGetValue(nextStepUUID, out nextStepButton);
+                        if (nextStepButton != null)
                         {
-                            PseudoButton nextStepButton = null;
-                            uuidToStepButton.TryGetValue(nextStepUUID, out nextStepButton);
-                            if (nextStepButton != null)
-                            {
-                                Line line = new Line();
-                                line.Visibility = System.Windows.Visibility.Visible;
-                                line.StrokeThickness = 2;
-
-                                //var x1 = GetRight(currentButton.button);
-                                line.X1 = currentButton.left + currentButton.button.ActualWidth;
-                                line.X2 = nextStepButton.left;
-                                line.Y1 = currentButton.top + currentButton.button.ActualHeight / 2;
-                                line.Y2 = nextStepButton.top + nextStepButton.button.ActualHeight / 2;
-                                Children.Add(line);
-                                //Arrowhead:
-                                var arrowheadlength = 7;
-                                Point source = new Point(line.X1, line.Y1);
-                                Point destination = new Point(line.X2, line.Y2);
-                                Matrix rotatorone = new Matrix();
-                                Vector backvect = (source - destination);
-                                backvect.Normalize();
-                                backvect = backvect * arrowheadlength;
-                                rotatorone.Rotate(45);
-                                Line arrowlineone = new Line();
-                                arrowlineone.X1= line.X2;
-                                arrowlineone.Y1 = line.Y2;
-                                Point arrowlineoneend= new Point(line.X2,line.Y2) + backvect * rotatorone;
-                                arrowlineone.X2 = arrowlineoneend.X;
-                                arrowlineone.Y2 = arrowlineoneend.Y;
-                                Line arrowlinetwo = new Line();
-                                arrowlinetwo.X1 = line.X2;
-                                arrowlinetwo.Y1 = line.Y2;
-                                Matrix rotatortwo = new Matrix();
-                                rotatortwo.Rotate(-45);
-                                Point arrowlinetwoend = new Point(line.X2, line.Y2) + backvect * rotatortwo;
-                                arrowlinetwo.X2 = arrowlinetwoend.X;
-                                arrowlinetwo.Y2 = arrowlinetwoend.Y;
-
-                                arrowlineone.Visibility = System.Windows.Visibility.Visible;
-                                arrowlineone.StrokeThickness = 2;
-                                arrowlinetwo.Visibility = System.Windows.Visibility.Visible;
-                                arrowlinetwo.StrokeThickness = 2;
-                                if (line.X1 < line.X2)
-                                {
-                                    line.Stroke = System.Windows.Media.Brushes.Black;
-                                    arrowlineone.Stroke = System.Windows.Media.Brushes.Black;
-                                    arrowlinetwo.Stroke = System.Windows.Media.Brushes.Black;
-                                }
-                                else
-                                {
-                                    line.Stroke = System.Windows.Media.Brushes.DarkGray;
-                                    arrowlineone.Stroke = System.Windows.Media.Brushes.DarkGray;
-                                    arrowlinetwo.Stroke = System.Windows.Media.Brushes.DarkGray;
-                                }
-                                Children.Add(arrowlineone);
-                                Children.Add(arrowlinetwo);
-                                SetZIndex(line, 0);
-                            }
+                            drawArrow(currentButton, nextStepButton, true);
                         }
-					}
-				}
+                    }
+                    string failStepUUID = choiceObj.failStepID;
+                    if (failStepUUID != null && failStepUUID != "")
+                    {
+                        PseudoButton nextStepButton = null;
+                        uuidToStepButton.TryGetValue(failStepUUID, out nextStepButton);
+                        if (nextStepButton != null)
+                        {
+                            drawArrow(currentButton, nextStepButton, false);
+                        }
+                    }
+
+                }
 			}
 		}
 	}

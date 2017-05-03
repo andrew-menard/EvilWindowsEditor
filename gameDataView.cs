@@ -280,31 +280,39 @@ namespace EvilWindowsEditor
                 if (_selectedQuestStep != value)
                 {
                     _selectedQuestStep = value;
+                    selectedQuestStepChoicesObservable.Clear();
+                    selectedQuestStepStatGrantsObservable.Clear();
+                    selectedQuestStepItemGrantsObservable.Clear();
+                    selectedQuestStepHenchmanGrantsObservable.Clear();
+                    NotifyPropertyChanged("selectedQuestStepChoicesObservable");
+                    NotifyPropertyChanged("selectedQuestStepStatGrantsObservable");
+                    NotifyPropertyChanged("selectedQuestStepItemGrantsObservable");
+                    NotifyPropertyChanged("selectedQuestStepHenchmanGrantsObservable");
+                    selectedQuestStepChoicesObservable = new ObservableCollection<gamedataObject>();
+                    selectedQuestStepStatGrantsObservable = new ObservableCollection<gamedataObject>();
+                    selectedQuestStepItemGrantsObservable = new ObservableCollection<gamedataObject>();
+                    selectedQuestStepHenchmanGrantsObservable = new ObservableCollection<gamedataObject>();
                     if (value != null)
                     {
                         //Populate the list of quest stepchoices.  Comes after the above which might be fixing a quest step so it gets found here.
-                        selectedQuestStepChoicesObservable.Clear();
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
                                                                                                && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                && iter.stepID.Equals(_selectedQuestStep.uuid)))
                         {
                             selectedQuestStepChoicesObservable.Add(gameObject);
                         }
-                        selectedQuestStepStatGrantsObservable.Clear();
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepStatGrantData")
                                                                                                && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                && iter.stepID.Equals(_selectedQuestStep.uuid)))
                         {
                             selectedQuestStepStatGrantsObservable.Add(gameObject);
                         }
-                        selectedQuestStepItemGrantsObservable.Clear();
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepItemGrantData")
                                                                                                && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                && iter.stepID.Equals(_selectedQuestStep.uuid)))
                         {
                             selectedQuestStepItemGrantsObservable.Add(gameObject);
                         }
-                        selectedQuestStepHenchmanGrantsObservable.Clear();
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepHenchmanGrantData")
                                                                                                && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                && iter.stepID.Equals(_selectedQuestStep.uuid)))
@@ -478,6 +486,9 @@ namespace EvilWindowsEditor
             {
                 if (gameDataObj != value)
                 {
+
+                    SelectedQuestStepChoice = null;
+                    SelectedQuestStep = null;
                     gameDataObj = value;
                     if (gameDataObj != null && gameDataObj.@class.Equals("ItemData"))
                     {
@@ -1831,7 +1842,7 @@ namespace EvilWindowsEditor
                     else if (objToDelete.@class == "StatGroupData")
                     {
                         //Delete both the stat group element, and the stat group category under stats
-                        if ((childnode.ObjectRef).Equals(objToDelete))
+                        if (childnode.ObjectRef != null && (childnode.ObjectRef).Equals(objToDelete))
                         {
                             node.Children.Remove(childnode);
                             break;
@@ -1844,7 +1855,7 @@ namespace EvilWindowsEditor
                     }
                     else
                     {
-                        if ((childnode.ObjectRef).Equals(objToDelete))
+                        if (childnode.ObjectRef !=null && (childnode.ObjectRef).Equals(objToDelete))
                         {
                             node.Children.Remove(childnode);
                             break;
@@ -1924,7 +1935,12 @@ namespace EvilWindowsEditor
                     {
                         gameObject.nextStepID = "";
                     }
-
+                    foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
+                                                                                                  && (iter.deleted == null || iter.deleted.Equals("False"))
+                                                                                                  && iter.failStepID.Equals(objToDelete.uuid)))
+                    {
+                        gameObject.failStepID = "";
+                    }
                     foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
                                                                                                    && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                    && iter.stepID.Equals(objToDelete.uuid)))
