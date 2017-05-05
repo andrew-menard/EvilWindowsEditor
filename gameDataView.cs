@@ -295,11 +295,18 @@ namespace EvilWindowsEditor
                     if (value != null)
                     {
                         //Populate the list of quest stepchoices.  Comes after the above which might be fixing a quest step so it gets found here.
+                        int sortIndex = 1;
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepChoiceData")
                                                                                                && (iter.deleted == null || iter.deleted.Equals("False"))
                                                                                                && iter.stepID.Equals(_selectedQuestStep.uuid)))
                         {
+                            if (gameObject.sortOrder==0)
+                            {//This is a patch for datafiles saved prior to the sort order existing -- add it in if necessary.
+                                gameObject.sortOrder = sortIndex;
+                                sortIndex++;
+                            }
                             selectedQuestStepChoicesObservable.Add(gameObject);
+
                         }
                         foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepStatGrantData")
                                                                                                && (iter.deleted == null || iter.deleted.Equals("False"))
@@ -1476,6 +1483,97 @@ namespace EvilWindowsEditor
             newQuestStepChoice.stepID = SelectedQuestStep.uuid;
             newQuestStepChoice.name = "New choice";
             newQuestStepChoice.description = "Pick Me!!!";
+            int sortIndex = 0;
+            foreach (gamedataObject existingChoice in _selectedQuestStepChoicesObservable)
+            {
+                if (existingChoice.sortOrder >= sortIndex)
+                {
+                    sortIndex = existingChoice.sortOrder + 1;
+                }
+            }
+            newQuestStepChoice.sortOrder = sortIndex;
+            _selectedQuestStepChoicesObservable.Add(newQuestStepChoice);
+            ObservableCollection<gamedataObject> temp = _selectedQuestStepChoicesObservable;
+            _selectedQuestStepChoicesObservable = temp;
+            var newRootItems = root.Items.ToList<gamedataObject>();
+            newRootItems.Add(newQuestStepChoice);
+            root.Items = newRootItems.ToArray();
+            allObjects[newQuestStepChoice.uuid] = newQuestStepChoice;
+        }
+
+        public void addNewQuestStepChoiceWithData(string inputLine)
+        {
+            string[] inputData = inputLine.Split(',');
+            gamedataObject newQuestStepChoice = new gamedataObject();
+            newQuestStepChoice.@class = "QuestStepChoiceData";
+            newQuestStepChoice.stepID = SelectedQuestStep.uuid;
+            if (inputData.Count() > 0)
+            {
+
+                newQuestStepChoice.name = inputData[0];
+            }
+            else
+            {
+                newQuestStepChoice.name = "New choice";
+            }
+            if (inputData.Count() > 1)
+            {
+
+                newQuestStepChoice.description = inputData[1];
+            }
+            else
+            {
+                newQuestStepChoice.description = "Pick Me!!!";
+            }
+
+            if (inputData.Count() > 2)
+            {
+
+                foreach (gamedataObject questStepObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepData")
+                && iter.questID.Equals(gameDataObj.uuid)
+                && iter.deleted != "True"
+                && iter.name.Equals(inputData[2])))
+                {
+                    newQuestStepChoice.nextStepID = questStepObject.uuid;
+                }
+            }
+
+            if (inputData.Count() > 3)
+            {
+
+                foreach (gamedataObject statObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StatData")
+                && iter.deleted != "True"
+                && iter.name.Equals(inputData[3])))
+                {
+                    newQuestStepChoice.statID = statObject.uuid;
+                }
+            }
+            if (inputData.Count() > 4)
+            {
+                
+                    newQuestStepChoice.statTarget = inputData[4];
+            }
+            if (inputData.Count() > 5)
+            {
+
+                foreach (gamedataObject questStepObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestStepData")
+                && iter.questID.Equals(gameDataObj.uuid)
+                && iter.deleted != "True"
+                && iter.name.Equals(inputData[5])))
+                {
+                    newQuestStepChoice.failStepID = questStepObject.uuid;
+                }
+            }
+            int sortIndex = 0;
+            foreach (gamedataObject existingChoice in _selectedQuestStepChoicesObservable)
+            {
+                if (existingChoice.sortOrder >= sortIndex)
+                {
+                    sortIndex = existingChoice.sortOrder + 1;
+                }
+            }
+
+            newQuestStepChoice.sortOrder = sortIndex;
             _selectedQuestStepChoicesObservable.Add(newQuestStepChoice);
             ObservableCollection<gamedataObject> temp = _selectedQuestStepChoicesObservable;
             _selectedQuestStepChoicesObservable = temp;

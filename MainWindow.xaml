@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EvilWindowsEditor"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:clr="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Evil Overlord Content Editor" Height="650" Width="1200"
         x:Name="RootWindow">
@@ -12,6 +14,16 @@
     </Window.DataContext>
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <CollectionViewSource x:Key="selectedQuestStepChoicesViewSource" 
+                              Source="{Binding selectedQuestStepChoicesObservable, Mode=OneWay}"
+                              IsLiveSortingRequested="True" >
+            <CollectionViewSource.LiveSortingProperties>
+                <clr:String>sortOrder</clr:String>
+            </CollectionViewSource.LiveSortingProperties>
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="sortOrder" Direction="Ascending"/>
+            </CollectionViewSource.SortDescriptions>  
+        </CollectionViewSource>
     </Window.Resources>
     <Grid>
         <Grid.Resources>
@@ -413,8 +425,18 @@
                                         <Button Click="DeleteSelectedQuestStepChoiceButton_Click">Delete the selected choice</Button>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
-                                        <DataGrid ItemsSource="{Binding selectedQuestStepChoicesObservable, Mode=OneWay}" AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" 
-                                          CanUserDeleteRows="False" CanUserSortColumns="True" x:Name="QuestStepChoiceGridRoot" SelectedItem="{Binding SelectedQuestStepChoice, Mode=TwoWay}">
+                                        <Button Click="MoveSelectedQuestStepChoiceUpButton_Click">Move the selected choice up</Button>
+                                        <Button Click="MoveSelectedQuestStepChoiceDownButton_Click">Move the selected choice down</Button>
+                                        <Button Click="ImportQuestStepChoices_Click">Import choices from text</Button>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <DataGrid ItemsSource="{Binding Source={StaticResource selectedQuestStepChoicesViewSource}, Mode=OneWay, NotifyOnSourceUpdated=True }"
+                                            AutoGenerateColumns="False" CanUserResizeColumns="True"  CanUserAddRows="False" SelectionMode="Single"
+                                            CanUserDeleteRows="False" CanUserSortColumns="False" x:Name="QuestStepChoiceGridRoot" SelectedItem="{Binding SelectedQuestStepChoice, 
+                                            Mode=TwoWay}"
+                                                  Visibility="{Binding questStepPanelVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}"
+                                                       IsVisibleChanged="QuestStepChoiceGridRoot_IsVisibleChanged"
+                                                  >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Name" Binding="{Binding name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                                 <DataGridTextColumn Header="Description" Binding="{Binding description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -436,6 +458,7 @@
                                                                  DisplayMemberPath="Name"
                                                                  SelectedValuePath="uuid"/>
                                             </DataGrid.Columns>
+                                            
                                         </DataGrid>
                                     </StackPanel>
 

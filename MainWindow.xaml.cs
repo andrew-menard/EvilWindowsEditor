@@ -113,6 +113,7 @@ namespace EvilWindowsEditor
             InitializeComponent();
             GameDataViewObject.PropertyChanged += GameDataViewObject_PropertyChanged;
         }
+        
         private void MenuItem_FindQuestByStat(object sender, RoutedEventArgs e)
         {
             // Instantiate the dialog box
@@ -358,6 +359,61 @@ namespace EvilWindowsEditor
             }
         }
 
+        private void MoveSelectedQuestStepChoiceUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            DataGrid dgr = (sender as Button).FindName("QuestStepChoiceGridRoot") as DataGrid;
+            gamedataObject selected = (dgr as DataGrid).SelectedItem as gamedataObject;
+            if (selected != null)
+            {
+                //Find the largest sort index less than the selected one, that's who we want to swap numbers with.
+                int sortIndex = 0;
+                gamedataObject objectToSwap = null;
+                foreach (gamedataObject otherChoice in GameDataViewObject.selectedQuestStepChoicesObservable)
+                {
+                    if (otherChoice.sortOrder > sortIndex && otherChoice.sortOrder < selected.sortOrder)
+                    {
+                        objectToSwap = otherChoice;
+                        sortIndex = otherChoice.sortOrder;
+                    }
+                }
+                if (objectToSwap != null) //If it is still null, there must be nothing above the selected in the list
+                {
+                    objectToSwap.sortOrder = selected.sortOrder;
+                    selected.sortOrder = sortIndex;
+                }
+            }
+            CollectionViewSource source = (CollectionViewSource)(this.Resources["selectedQuestStepChoicesViewSource"]);
+            source.View.SortDescriptions.Clear();
+            source.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("sortOrder", System.ComponentModel.ListSortDirection.Ascending));
+        }
+        private void MoveSelectedQuestStepChoiceDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            object dgr = (sender as Button).FindName("QuestStepChoiceGridRoot");
+            gamedataObject selected = (dgr as DataGrid).SelectedItem as gamedataObject;
+            if (selected != null)
+            {
+                //Find the largest sort index less than the selected one, that's who we want to swap numbers with.
+                int sortIndex = Int32.MaxValue;
+                gamedataObject objectToSwap = null;
+                foreach (gamedataObject otherChoice in GameDataViewObject.selectedQuestStepChoicesObservable)
+                {
+                    if (otherChoice.sortOrder < sortIndex && otherChoice.sortOrder > selected.sortOrder)
+                    {
+                        objectToSwap = otherChoice;
+                        sortIndex = otherChoice.sortOrder;
+                    }
+                }
+                if (objectToSwap != null) //If it is still null, there must be nothing above the selected in the list
+                {
+                    objectToSwap.sortOrder = selected.sortOrder;
+                    selected.sortOrder = sortIndex;
+                }
+            }
+            CollectionViewSource source = (CollectionViewSource)(this.Resources["selectedQuestStepChoicesViewSource"]);
+            source.View.SortDescriptions.Clear();
+            source.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("sortOrder", System.ComponentModel.ListSortDirection.Ascending));
+
+        }
         private void AddQuestStepChoiceStatRequirementButton_Click(object sender, RoutedEventArgs e)
         {
             GameDataViewObject.addNewQuestStepChoiceStatRequirement();
@@ -420,6 +476,50 @@ namespace EvilWindowsEditor
             if (e.NewValue as bool? == true)
             {
                 qf.BuildFlowchart();
+            }
+        }
+        
+        private void QuestStepChoiceGridRoot_AddingNewItem(object sender, AddingNewItemEventArgs e)
+        {
+
+            CollectionViewSource source = (CollectionViewSource)(this.Resources["selectedQuestStepChoicesViewSource"]);
+            source.View.SortDescriptions.Clear();
+            source.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("sortOrder", System.ComponentModel.ListSortDirection.Ascending));
+        }
+
+        private void QuestStepChoiceGridRoot_Initialized(object sender, EventArgs e)
+        {
+
+
+            CollectionViewSource source = (CollectionViewSource)(this.Resources["selectedQuestStepChoicesViewSource"]);
+            source.View.SortDescriptions.Clear();
+            source.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("sortOrder", System.ComponentModel.ListSortDirection.Ascending));
+
+        }
+
+        private void QuestStepChoiceGridRoot_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+
+            CollectionViewSource source = (CollectionViewSource)(this.Resources["selectedQuestStepChoicesViewSource"]);
+            source.View.SortDescriptions.Clear();
+            source.View.SortDescriptions.Add(new System.ComponentModel.SortDescription("sortOrder", System.ComponentModel.ListSortDirection.Ascending));
+
+        }
+
+        private void ImportQuestStepChoices_Click(object sender, RoutedEventArgs e)
+        {
+            ChoiceImportDialog inputDialog = new ChoiceImportDialog();
+            if (inputDialog.ShowDialog() == true)
+            {
+                using (System.IO.StringReader reader = new System.IO.StringReader(inputDialog.ChoicesText))
+                {
+                    string line = reader.ReadLine();
+                    while (line != null)
+                    {
+                        GameDataViewObject.addNewQuestStepChoiceWithData(line);
+                        line = reader.ReadLine();
+                    }
+                }
             }
         }
     }

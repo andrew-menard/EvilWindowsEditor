@@ -60,7 +60,7 @@ public partial class gamedataObject {
     private string questIsForceGrantedField; //Effectively a bool
     private string cooldownTimerField; //Minutes until quest available again for timed quests
     private string questEnergyCostField;
-    
+    private int sortOrderField=0; //For things like quest choices when the designer wants to specify a custom sort.
     private gamedataObjectItem[] itemField;
 
     private gamedataObjectStartingCharacterInfo[] startingCharacterInfoField;
@@ -246,6 +246,20 @@ public partial class gamedataObject {
                 this.questEnergyCostField = "0";
             }
             NotifyPropertyChanged("questEnergyCost");
+        }
+    }
+    /// <remarks/>
+    [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+    public int sortOrder
+    {
+        get
+        {
+            return sortOrderField;
+        }
+        set
+        {
+            sortOrderField = value;
+            NotifyPropertyChanged("sortOrder");
         }
     }
     /// <remarks/>
