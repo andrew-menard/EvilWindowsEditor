@@ -133,6 +133,14 @@
                             <Label>Cooldown timer til you can run quest again (in minutes):</Label>
                             <TextBox Width="50" Text="{Binding cooldownTimer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding locationVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>Sub-location of:</Label>
+                            <ComboBox Width="150" ItemsSource="{Binding Locations, Mode=OneWay}"  DisplayMemberPath="Name" 
+                                          SelectedValuePath="uuid"
+                                          IsSynchronizedWithCurrentItem="False" 
+                                          SelectedValue="{Binding subLocationOf, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            </ComboBox>
+                        </StackPanel>
                         <StackPanel Orientation="Horizontal" Visibility="{Binding itemTypeVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
                             <Label>Item Type:</Label>
                             <ComboBox Width="150" ItemsSource="{Binding ItemTypes, Mode=OneWay}"  DisplayMemberPath="Name" 

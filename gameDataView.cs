@@ -580,6 +580,7 @@ namespace EvilWindowsEditor
             NotifyPropertyChanged("equippable");
             NotifyPropertyChanged("equippableVisible");
             NotifyPropertyChanged("itemType");
+            NotifyPropertyChanged("subLocationOf");
             NotifyPropertyChanged("requiredLocation");
             NotifyPropertyChanged("startingLocation");
             NotifyPropertyChanged("associatedLocation");
@@ -588,6 +589,7 @@ namespace EvilWindowsEditor
             NotifyPropertyChanged("unlockLocation");
             NotifyPropertyChanged("associatedNPC");
             NotifyPropertyChanged("startingQuest");
+            NotifyPropertyChanged("locationVisible");
             NotifyPropertyChanged("itemTypeVisible");
             NotifyPropertyChanged("itemStatModifiers");
             NotifyPropertyChanged("itemStatModifiersObservable");
@@ -966,6 +968,17 @@ namespace EvilWindowsEditor
                 { return false; }
             }
         }
+        public string subLocationOf
+        {
+            get { if (gameDataObj == null || gameDataObj.subLocationOfID == null) { return ""; } else return gameDataObj.subLocationOfID; }
+            set
+            {
+                if (value == null)
+                    gameDataObj.subLocationOfID = "";
+                else
+                    gameDataObj.subLocationOfID = value;
+            }
+        }
         public string requiredLocation
         {
             get { if (gameDataObj == null || gameDataObj.requiredLocationID == null) { return ""; } else return gameDataObj.requiredLocationID; }
@@ -1076,6 +1089,17 @@ namespace EvilWindowsEditor
                         selectedGameTreeItem = localGameTreeItem;//We need to reselect the item, because pulling it out of the tree un-selected it!
                     }
                 }
+            }
+        }
+        public bool locationVisible
+        {
+            get
+            {
+                if (gameDataObj == null) { return false; }
+                if (gameDataObj.@class.Equals("LocationData"))
+                { return true; }
+                else
+                { return false; }
             }
         }
         public bool itemTypeVisible

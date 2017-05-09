@@ -89,6 +89,21 @@ public partial class gamedataObject: INotifyPropertyChanged
         }
     }
     [XmlIgnore]
+    public string subLocationOfID
+    {
+        get { if (subLocationOf == null || subLocationOf.Length == 0 || subLocationOf[0].Value == null) return ""; return subLocationOf[0].Value; }
+        set
+        {
+            if (subLocationOf == null)
+            {
+                subLocationOf = new gamedataObjectLocation[1];
+                subLocationOf[0] = new gamedataObjectLocation();
+                subLocationOf[0].@class = "UUID";
+            }
+            subLocationOf[0].Value = value;
+        }
+    }
+    [XmlIgnore]
     public string requiredLocationID
     {
         get { if (requiredLocation == null || requiredLocation.Length == 0 || requiredLocation[0].Value==null) return ""; return requiredLocation[0].Value; }
@@ -96,8 +111,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         {
             if (requiredLocation == null)
             {
-                requiredLocation = new gamedataObjectRequiredLocation[1];
-                requiredLocation[0] = new gamedataObjectRequiredLocation();
+                requiredLocation = new gamedataObjectLocation[1];
+                requiredLocation[0] = new gamedataObjectLocation();
                 requiredLocation[0].@class = "UUID";
             }
             requiredLocation[0].Value = value;
@@ -254,8 +269,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         {
             if (startingLocation == null)
             {
-                startingLocation = new gamedataObjectStartingLocation[1];
-                startingLocation[0] = new gamedataObjectStartingLocation();
+                startingLocation = new gamedataObjectLocation[1];
+                startingLocation[0] = new gamedataObjectLocation();
                 startingLocation[0].@class = "UUID";
             }
             startingLocation[0].Value = value;

@@ -82,9 +82,9 @@ public partial class gamedataObject {
     
     private gamedataObjectItemType[] itemTypeField;
 
-    private gamedataObjectRequiredLocation[] requiredLocationField;
-
-    private gamedataObjectStartingLocation[] startingLocationField;
+    private gamedataObjectLocation[] subLocationOfField;
+    private gamedataObjectLocation[] requiredLocationField;
+    private gamedataObjectLocation[] startingLocationField;
 
     private gamedataObjectAssociatedLocation[] associatedLocationField;
     private gamedataObjectUnlockLocation[] unlockLocationField;
@@ -566,8 +566,21 @@ public partial class gamedataObject {
     }
 
     /// <remarks/>
+    [System.Xml.Serialization.XmlElementAttribute("subLocationOf", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
+    public gamedataObjectLocation[] subLocationOf
+    {
+        get
+        {
+            return this.subLocationOfField;
+        }
+        set
+        {
+            this.subLocationOfField = value;
+        }
+    }
+    /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("requiredLocation", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectRequiredLocation[] requiredLocation
+    public gamedataObjectLocation[] requiredLocation
     {
         get
         {
@@ -580,7 +593,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("startingLocation", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectStartingLocation[] startingLocation
+    public gamedataObjectLocation[] startingLocation
     {
         get
         {
@@ -806,17 +819,10 @@ public partial class gamedataObjectItemType : objectReference
     {
     }
 }
-public partial class gamedataObjectRequiredLocation : objectReference
+public partial class gamedataObjectLocation : objectReference
 {
 
-    public gamedataObjectRequiredLocation() : base("LocationData")
-    {
-    }
-}
-public partial class gamedataObjectStartingLocation : objectReference
-{
-
-    public gamedataObjectStartingLocation() : base("LocationData")
+    public gamedataObjectLocation() : base("LocationData")
     {
     }
 }
