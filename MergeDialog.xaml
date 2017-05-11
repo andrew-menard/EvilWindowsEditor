@@ -1,0 +1,40 @@
+﻿<Window x:Class="EvilWindowsEditor.MergeDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EvilWindowsEditor"
+        mc:Ignorable="d"
+        Title="Merge Two Files Dialog" Height="650" Width="1200">
+    <Window.DataContext>
+        <local:MergeProcessorView x:Name="MergeProcessorObject" ></local:MergeProcessorView>
+    </Window.DataContext>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="70" />
+        </Grid.RowDefinitions>
+        <TextBlock TextWrapping="WrapWithOverflow" Margin="0,0,0,21">For each object which is different in the two files, you must pick which version to use before accepting the merge.  Items which only exist in one file are automatically merged.</TextBlock>
+
+        <local:TreeViewEx Grid.Column="0" Grid.Row="1" MinWidth="300" ItemsSource="{Binding MergeTree, Mode=OneWay}" SelectedItem="{Binding SelectedMergeTreeItem, Mode=TwoWay}">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type local:MergeTreeItem}" ItemsSource="{Binding Children, Mode=OneWay}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=Name, Mode=OneWay}" Foreground="{Binding Path=ForegroundColor}" />
+                        <CheckBox Content="Use Original Version" IsChecked="{Binding Path=SelectOriginal, Mode=TwoWay}" Visibility="{Binding ObjectsDiffer,Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
+                        <CheckBox Content="Use Merge File Version" IsChecked="{Binding Path=SelectMerge, Mode=TwoWay}" Visibility="{Binding ObjectsDiffer,Mode=OneWay, Converter={StaticResource BoolToVis}}"/>
+
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </local:TreeViewEx>
+        <WrapPanel Grid.Row="2" HorizontalAlignment="Right" Margin="0,17,0,31" Grid.RowSpan="2" >
+            <Button IsDefault="True" Name="btnDialogOk" Click="btnDialogOk_Click" MinWidth="60" Margin="0,0,10,0" IsEnabled="{Binding Path=MergeComplete, Mode=OneWay}">_Ok</Button>
+            <Button IsCancel="True" MinWidth="60">_Cancel</Button>
+        </WrapPanel>
+    </Grid>
+</Window>

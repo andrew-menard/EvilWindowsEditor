@@ -117,7 +117,7 @@ namespace EvilWindowsEditor
             }
             set
             {
-                //We're only actually going to set this when we have read in a new file; it sets up the various 
+                //We're only actually going to set this when we have read in a new file (or finish a merge); it sets up the various 
                 //reference lists and dictionaries that we use for convenient binding to the UI.
                 _root = value;
                 //This should be broken out to a new function, we really don't need to do this when objects are addedd
@@ -125,7 +125,7 @@ namespace EvilWindowsEditor
                 {
                     //This covers the edge case where we read in a file but it contained no items; in that case the 
                     //reader never created root.Items, so some of the bindings will get nulls.
-                    root.Items = new gamedataObject[0];
+                    root.Items = new List<gamedataObject>();
                 }
                 locations.Clear();
                 gamedataObject nullLocation = new gamedataObject();
@@ -369,17 +369,17 @@ namespace EvilWindowsEditor
                                                                                                        && x.questID.Equals(inneriter.ObjectRef.uuid)
                                                                                                        && x.statID.Equals(value)))
                                 {
-                                    Int32 temp;
-                                    if (Int32.TryParse(gameObject.minimum, out temp))
-                                    {
-                                        inneriter.MinStatValue = temp;
-                                    }
-                                    else { inneriter.MinStatValue = 0; }
-                                    if (Int32.TryParse(gameObject.maximum, out temp))
-                                    {
-                                        inneriter.MaxStatValue = temp;
-                                    }
-                                    else { inneriter.MaxStatValue = 0; }
+                                   // Int32 temp;
+                                   // if (Int32.TryParse(gameObject.minimum, out temp))
+                                    //{
+                                        inneriter.MinStatValue = (int)gameObject.minimum;
+                                    //}
+                                    //else { inneriter.MinStatValue = 0; }
+                                    //if (Int32.TryParse(gameObject.maximum, out temp))
+                                    //{
+                                        inneriter.MaxStatValue = (int)gameObject.maximum;
+                                    //}
+                                    //else { inneriter.MaxStatValue = 0; }
                                 }
                             }
 
@@ -1336,9 +1336,9 @@ namespace EvilWindowsEditor
             gamedataObject newObj = new gamedataObject();
             newObj.@class = objectType + "Data";
             newObj.name = "New " + objectType;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newObj);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newObj);
+            //root.Items = newRootItems.ToArray();
             allObjects[newObj.uuid] = newObj;
             if (objectType.Equals("Location"))
             {
@@ -1440,11 +1440,11 @@ namespace EvilWindowsEditor
             newHenchmanStat.@class = "HenchmanStatData";
             newHenchmanStat.henchmanID = gameData.uuid;
             newHenchmanStat.statID = stats.First().uuid;
-            newHenchmanStat.value = "0";
+            newHenchmanStat.value = 0;// "0";
             _henchmanStats.Add(newHenchmanStat);
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newHenchmanStat);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newHenchmanStat);
+            //root.Items = newRootItems.ToArray();
             allObjects[newHenchmanStat.uuid] = newHenchmanStat;
         }
         public void addNewItemStatModifier()
@@ -1467,10 +1467,10 @@ namespace EvilWindowsEditor
         {
             newStatMod.itemID = gameData.uuid;
             newStatMod.statID = stats.First().uuid;
-            newStatMod.value = "0";
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newStatMod);
-            root.Items = newRootItems.ToArray();
+            newStatMod.value = 0;// "0";
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newStatMod);
+            //root.Items = newRootItems.ToArray();
             allObjects[newStatMod.uuid] = newStatMod;
         }
         public void addNewQuestStatRequirement()
@@ -1479,12 +1479,12 @@ namespace EvilWindowsEditor
             newStatReq.@class = "QuestStatRequirementData";
             newStatReq.questID = gameData.uuid;
             newStatReq.statID = stats.First().uuid;
-            newStatReq.minimum = "0";
-            newStatReq.maximum = "0";
+            newStatReq.minimum = 0;// "0";
+            newStatReq.maximum = 0;// "0";
             _questStatRequirementsObservable.Add(newStatReq);
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newStatReq);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newStatReq);
+            //root.Items = newRootItems.ToArray();
             allObjects[newStatReq.uuid] = newStatReq;
         }
         public void addNewQuestItemRequirement()
@@ -1493,11 +1493,11 @@ namespace EvilWindowsEditor
             newStatReq.@class = "QuestItemRequirementData";
             newStatReq.questID = gameData.uuid;
             newStatReq.itemID = items.First().uuid;
-            newStatReq.value = "0";
+            newStatReq.value = 0;// "0";
             _questItemRequirementsObservable.Add(newStatReq);
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newStatReq);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newStatReq);
+            //root.Items = newRootItems.ToArray();
             allObjects[newStatReq.uuid] = newStatReq;
         }
         public void addNewQuestStepChoice()
@@ -1519,9 +1519,9 @@ namespace EvilWindowsEditor
             _selectedQuestStepChoicesObservable.Add(newQuestStepChoice);
             ObservableCollection<gamedataObject> temp = _selectedQuestStepChoicesObservable;
             _selectedQuestStepChoicesObservable = temp;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newQuestStepChoice);
-            root.Items = newRootItems.ToArray();
+            //rootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newQuestStepChoice);
+            //root.Items = newRootItems.ToArray();
             allObjects[newQuestStepChoice.uuid] = newQuestStepChoice;
         }
 
@@ -1574,8 +1574,11 @@ namespace EvilWindowsEditor
             }
             if (inputData.Count() > 4)
             {
-                
-                    newQuestStepChoice.statTarget = inputData[4];
+                int parseAttempt = 0;
+                if (Int32.TryParse(inputData[4], out parseAttempt))
+                    newQuestStepChoice.statTarget = parseAttempt;
+                else
+                    newQuestStepChoice.statTarget = 0;
             }
             if (inputData.Count() > 5)
             {
@@ -1601,9 +1604,9 @@ namespace EvilWindowsEditor
             _selectedQuestStepChoicesObservable.Add(newQuestStepChoice);
             ObservableCollection<gamedataObject> temp = _selectedQuestStepChoicesObservable;
             _selectedQuestStepChoicesObservable = temp;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newQuestStepChoice);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newQuestStepChoice);
+            //root.Items = newRootItems.ToArray();
             allObjects[newQuestStepChoice.uuid] = newQuestStepChoice;
         }
         public void addNewQuestStepItemGrant()
@@ -1611,15 +1614,15 @@ namespace EvilWindowsEditor
             gamedataObject newQuestStepItemGrant = new gamedataObject();
             newQuestStepItemGrant.@class = "QuestStepItemGrantData";
             newQuestStepItemGrant.stepID = SelectedQuestStep.uuid;
-            newQuestStepItemGrant.value = "0";
+            newQuestStepItemGrant.value = 0;// "0";
             newQuestStepItemGrant.name = "";
             newQuestStepItemGrant.description = "";
             _selectedQuestStepItemGrantsObservable.Add(newQuestStepItemGrant);
             ObservableCollection<gamedataObject> temp = _selectedQuestStepItemGrantsObservable;
             _selectedQuestStepItemGrantsObservable = temp;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newQuestStepItemGrant);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newQuestStepItemGrant);
+            //root.Items = newRootItems.ToArray();
             allObjects[newQuestStepItemGrant.uuid] = newQuestStepItemGrant;
         }
         public void addNewQuestStepStatGrant()
@@ -1627,13 +1630,13 @@ namespace EvilWindowsEditor
             gamedataObject newQuestStepStatGrant = new gamedataObject();
             newQuestStepStatGrant.@class = "QuestStepStatGrantData";
             newQuestStepStatGrant.stepID = SelectedQuestStep.uuid;
-            newQuestStepStatGrant.value = "0";
+            newQuestStepStatGrant.value = 0;// "0";
             _selectedQuestStepStatGrantsObservable.Add(newQuestStepStatGrant);
             ObservableCollection<gamedataObject> temp = _selectedQuestStepStatGrantsObservable;
             _selectedQuestStepStatGrantsObservable = temp;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newQuestStepStatGrant);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newQuestStepStatGrant);
+            //root.Items = newRootItems.ToArray();
             allObjects[newQuestStepStatGrant.uuid] = newQuestStepStatGrant;
         }
         public void addNewQuestStepHenchmanGrant()
@@ -1644,9 +1647,9 @@ namespace EvilWindowsEditor
             _selectedQuestStepHenchmanGrantsObservable.Add(newQuestStepHenchmanGrant);
             ObservableCollection<gamedataObject> temp = _selectedQuestStepHenchmanGrantsObservable;
             _selectedQuestStepHenchmanGrantsObservable = temp;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newQuestStepHenchmanGrant);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newQuestStepHenchmanGrant);
+            //root.Items = newRootItems.ToArray();
             allObjects[newQuestStepHenchmanGrant.uuid] = newQuestStepHenchmanGrant;
         }
         public void addNewQuestStepChoiceItemGrant()
@@ -1654,15 +1657,15 @@ namespace EvilWindowsEditor
             gamedataObject newQuestStepChoiceItemGrant = new gamedataObject();
             newQuestStepChoiceItemGrant.@class = "QuestStepChoiceItemGrantData";
             newQuestStepChoiceItemGrant.questStepChoiceID = SelectedQuestStepChoice.uuid;
-            newQuestStepChoiceItemGrant.value = "0";
+            newQuestStepChoiceItemGrant.value = 0;// "0";
             newQuestStepChoiceItemGrant.name = "";
             newQuestStepChoiceItemGrant.description = "";
             _selectedQuestStepChoiceItemGrantsObservable.Add(newQuestStepChoiceItemGrant);
             ObservableCollection<gamedataObject> temp = _selectedQuestStepChoiceItemGrantsObservable;
             _selectedQuestStepChoiceItemGrantsObservable = temp;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newQuestStepChoiceItemGrant);
-            root.Items = newRootItems.ToArray();
+           // var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newQuestStepChoiceItemGrant);
+            //root.Items = newRootItems.ToArray();
             allObjects[newQuestStepChoiceItemGrant.uuid] = newQuestStepChoiceItemGrant;
         }
         public void addNewQuestStepChoiceStatGrant()
@@ -1670,13 +1673,13 @@ namespace EvilWindowsEditor
             gamedataObject newQuestStepChoiceStatGrant = new gamedataObject();
             newQuestStepChoiceStatGrant.@class = "QuestStepChoiceStatGrantData";
             newQuestStepChoiceStatGrant.questStepChoiceID = SelectedQuestStepChoice.uuid;
-            newQuestStepChoiceStatGrant.value = "0";
+            newQuestStepChoiceStatGrant.value = 0;// "0";
             _selectedQuestStepChoiceStatGrantsObservable.Add(newQuestStepChoiceStatGrant);
             ObservableCollection<gamedataObject> temp = _selectedQuestStepChoiceStatGrantsObservable;
             _selectedQuestStepChoiceStatGrantsObservable = temp;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newQuestStepChoiceStatGrant);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newQuestStepChoiceStatGrant);
+            //root.Items = newRootItems.ToArray();
             allObjects[newQuestStepChoiceStatGrant.uuid] = newQuestStepChoiceStatGrant;
         }
         public void addNewQuestStepChoiceStatRequirement()
@@ -1684,13 +1687,13 @@ namespace EvilWindowsEditor
             gamedataObject newQuestStepChoiceStatRequirement = new gamedataObject();
             newQuestStepChoiceStatRequirement.@class = "QuestStepChoiceStatRequirementData";
             newQuestStepChoiceStatRequirement.questStepChoiceID = SelectedQuestStepChoice.uuid;
-            newQuestStepChoiceStatRequirement.value = "0";
+            newQuestStepChoiceStatRequirement.value = 0;// "0";
             _selectedQuestStepChoiceStatRequirementsObservable.Add(newQuestStepChoiceStatRequirement);
             ObservableCollection<gamedataObject> temp = _selectedQuestStepChoiceStatRequirementsObservable;
             _selectedQuestStepChoiceStatRequirementsObservable = temp;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newQuestStepChoiceStatRequirement);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newQuestStepChoiceStatRequirement);
+            //root.Items = newRootItems.ToArray();
             allObjects[newQuestStepChoiceStatRequirement.uuid] = newQuestStepChoiceStatRequirement;
         }
         public void addNewQuestStepChoiceHenchmanGrant()
@@ -1701,9 +1704,9 @@ namespace EvilWindowsEditor
             _selectedQuestStepChoiceHenchmanGrantsObservable.Add(newQuestStepChoiceHenchmanGrant);
             ObservableCollection<gamedataObject> temp = _selectedQuestStepChoiceHenchmanGrantsObservable;
             _selectedQuestStepChoiceHenchmanGrantsObservable = temp;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(newQuestStepChoiceHenchmanGrant);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(newQuestStepChoiceHenchmanGrant);
+            //root.Items = newRootItems.ToArray();
             allObjects[newQuestStepChoiceHenchmanGrant.uuid] = newQuestStepChoiceHenchmanGrant;
         }
         public void addNewQuest()
@@ -1718,10 +1721,10 @@ namespace EvilWindowsEditor
             questItem.name = "New quest";
             questItem.description = "Description of new quest";
             questItem.firstStepID = questStepItem.uuid;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(questItem);
-            newRootItems.Add(questStepItem);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(questItem);
+            root.Items.Add(questStepItem);
+            //root.Items = newRootItems.ToArray();
             allObjects[questItem.uuid] = questItem;
             allObjects[questStepItem.uuid] = questStepItem;
             SelectNewObject(questItem, "Quest");
@@ -1753,9 +1756,9 @@ namespace EvilWindowsEditor
             NotifyPropertyChanged("selectedQuestStepsObservable");
             //Re-bind the choices grid, because that forces a rebuild of the grid; the next-choice doesn't auto-detect changes the way it should.
             choice.nextStepID = questStepItem.uuid;
-            var newRootItems = root.Items.ToList<gamedataObject>();
-            newRootItems.Add(questStepItem);
-            root.Items = newRootItems.ToArray();
+            //var newRootItems = root.Items.ToList<gamedataObject>();
+            root.Items.Add(questStepItem);
+            //root.Items = newRootItems.ToArray();
             allObjects[questStepItem.uuid] = questStepItem;
         }
         public Boolean deleteObjectButtonVisible

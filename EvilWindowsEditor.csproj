@@ -57,6 +57,10 @@
     <Compile Include="FindQuestByStat.xaml.cs">
       <DependentUpon>FindQuestByStat.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MergeDialog.xaml.cs">
+      <DependentUpon>MergeDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MergeProcessor.cs" />
     <Compile Include="questFlowchart.cs" />
     <Compile Include="ChoiceImportDialog.xaml.cs">
       <DependentUpon>ChoiceImportDialog.xaml</DependentUpon>
@@ -81,6 +85,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ChoiceImportDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MergeDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,19 +1,9 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -168,6 +158,28 @@ namespace EvilWindowsEditor
                 }
             }
             return;
+        }
+        private void MenuItem_MergeFile(object sender, RoutedEventArgs e)
+        {
+            var ofDialog = new OpenFileDialog()
+            {
+                Title = "Select game data file to merge into this file",
+                DefaultExt = ".xml",
+            };
+            bool? dialogResult = ofDialog.ShowDialog(this);
+            if (dialogResult == true)
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(gamedata));
+                XmlReader reader = XmlReader.Create(ofDialog.FileName);
+                gamedata fileToMerge = (gamedata)serializer.Deserialize(reader);
+                reader.Dispose();
+                MergeDialog inputDialog = new MergeDialog(GameDataViewObject.root,fileToMerge);
+                if (inputDialog.ShowDialog() == true)
+                {
+                    inputDialog.commitMerge();
+                    GameDataViewObject.root = GameDataViewObject.root;  //Retriggers the setter FIXME make this cleaner
+                }
+            }
         }
         private void MenuItem_OpenFile(object sender, RoutedEventArgs e)
         {

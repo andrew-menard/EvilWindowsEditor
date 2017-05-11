@@ -3,23 +3,45 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Serialization;
 /// <remarks/>
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true)]
 [System.Xml.Serialization.XmlRootAttribute(Namespace="", IsNullable=false)]
 public partial class gamedata {
-    
-    private gamedataObject[] itemsField;
+
+    [XmlIgnore]
+    private List<gamedataObject> itemsField;
     
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("object", Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-    public gamedataObject[] Items {
+    public List<gamedataObject> Items {
         get {
             return this.itemsField;
         }
         set {
             this.itemsField = value;
         }
+    }
+
+    public gamedataObject getItemByID(string uuid)
+    {
+        foreach (gamedataObject obj in Items.Where<gamedataObject>(iter => iter.uuid.Equals(uuid) && iter.deleted == "False"))
+        {
+            return obj;
+        }
+        return null;
+    }
+    public gamedataObject getDeletedItemByID(string uuid)
+    {
+        foreach (gamedataObject obj in Items.Where<gamedataObject>(iter => iter.uuid.Equals(uuid) && iter.deleted == "True"))
+        {
+            return obj;
+        }
+        return null;
     }
 }
 
@@ -28,6 +50,9 @@ public partial class gamedata {
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true)]
 public partial class gamedataObject {
     
+    //*********************IMPORTANT: If you add a field here, make sure to add it to the .Equals method in gamedatahelpers!
+    //*********************Similarly, if you add a new many-to-one relationship, make sure it is also added in gamedatahelpers!
+
     private string nameField;
     
     private string descriptionField;
@@ -38,19 +63,19 @@ public partial class gamedataObject {
 
     private string iconField;
     
-    private string giveItemNumberField;
+    private int giveItemNumberField=0;
     
-    private string minimumField;
+    private int minimumField=0;
     
-    private string maximumField;
+    private int maximumField=0;
     
     private string equippableField;
     
     private string uuidField;
     
-    private string valueField;
-    private string statTargetField;
-    private string alternateBackgroundField;
+    private int valueField=0;
+    private int statTargetField=0;
+    private string alternateBackgroundField="";
 
     private string deletedField; //Effectively a boolean
 
@@ -61,38 +86,37 @@ public partial class gamedataObject {
     private string cooldownTimerField; //Minutes until quest available again for timed quests
     private string questEnergyCostField;
     private int sortOrderField=0; //For things like quest choices when the designer wants to specify a custom sort.
-    private gamedataObjectItem[] itemField;
+    private List<gamedataObjectItem> itemField;
 
-    private gamedataObjectStartingCharacterInfo[] startingCharacterInfoField;
+    private List<gamedataObjectStartingCharacterInfo> startingCharacterInfoField;
 
-    private gamedataObjectStep[] stepField;
-
-    private gamedataObjectStep[] failStepField;
-    private gamedataObjectNextStep[] nextStepField;
+    private List<gamedataObjectStep> stepField;
+    private List<gamedataObjectStep> firstStepField;
+    private List<gamedataObjectStep> failStepField;
+    private List<gamedataObjectStep> nextStepField;
     
-    private gamedataObjectQuest[] questField;
+    private List<gamedataObjectQuest> questField;
     
-    private gamedataObjectQuestStepChoice[] questStepChoiceField;
+    private List<gamedataObjectQuestStepChoice> questStepChoiceField;
     
-    private gamedataObjectStat[] statField;
-    private gamedataObjectStat[] xpStatField;
-    private gamedataObjectHenchman[] henchmanField;
+    private List<gamedataObjectStat> statField;
+    private List<gamedataObjectStat> xpStatField;
+    private List<gamedataObjectHenchman> henchmanField;
     
-    private gamedataObjectFirstStep[] firstStepField;
     
-    private gamedataObjectItemType[] itemTypeField;
+    private List<gamedataObjectItemType> itemTypeField;
 
-    private gamedataObjectLocation[] subLocationOfField;
-    private gamedataObjectLocation[] requiredLocationField;
-    private gamedataObjectLocation[] startingLocationField;
+    private List<gamedataObjectLocation> subLocationOfField;
+    private List<gamedataObjectLocation> requiredLocationField;
+    private List<gamedataObjectLocation> startingLocationField;
 
-    private gamedataObjectAssociatedLocation[] associatedLocationField;
-    private gamedataObjectUnlockLocation[] unlockLocationField;
-    private gamedataObjectMoveToLocation[] moveToLocationField;
-    private gamedataObjectAssociatedNPC[] associatedNPCField;
-    private gamedataObjectStartingQuest[] startingQuestField;
+    private List<gamedataObjectLocation> associatedLocationField;
+    private List<gamedataObjectLocation> unlockLocationField;
+    private List<gamedataObjectLocation> moveToLocationField;
+    private List<gamedataObjectNPC> associatedNPCField;
+    private List<gamedataObjectQuest> startingQuestField;
 
-    private gamedataObjectStatGroup[] statGroupField;
+    private List<gamedataObjectStatGroup> statGroupField;
 
     private string classField;
     
@@ -176,7 +200,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-    public string giveItemNumber {
+    public int giveItemNumber {
         get {
             return this.giveItemNumberField;
         }
@@ -186,38 +210,46 @@ public partial class gamedataObject {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-    public string minimum {
-        get {
-            if (this.minimumField == null || this.minimumField=="")
-            { return "0"; }
-            else
-            {
-                return this.minimumField;
-            }
+    [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+    public int minimum
+    {
+        get
+        {
+            //            if (this.minimumField == null || this.minimumField=="")
+            //           { return "0"; }
+            //          else
+            //         {
+            return this.minimumField;
+            //       }
         }
-        set {
+        set
+        {
             this.minimumField = value;
+
         }
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-    public string maximum {
-        get {
-            if (this.maximumField == null || this.maximumField=="")
-            {
-                return "0";
-            }
-            else
-            {
-                return this.maximumField;
-            }
-        }
-        set {
-            this.maximumField = value;
-        }
+    [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+public int maximum
+{
+    get
+    {
+        //if (this.maximumField == null || this.maximumField=="")
+        //{
+        //    return "0";
+        //}
+        //else
+        //{
+        return this.maximumField;
+        //}
     }
+    set
+    {
+        this.maximumField = value;
+
+    }
+}
 
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -295,7 +327,7 @@ public partial class gamedataObject {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-    public string value {
+    public int value {
         get {
             return this.valueField;
         }
@@ -428,7 +460,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("item", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
-    public gamedataObjectItem[] item {
+    public List<gamedataObjectItem> item {
         get {
             return this.itemField;
         }
@@ -439,7 +471,7 @@ public partial class gamedataObject {
 
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("startingCharacterInfo", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectStartingCharacterInfo[] startingCharacterInfo
+    public List<gamedataObjectStartingCharacterInfo> startingCharacterInfo
     {
         get
         {
@@ -452,7 +484,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("step", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
-    public gamedataObjectStep[] step {
+    public List<gamedataObjectStep> step {
         get {
             return this.stepField;
         }
@@ -463,7 +495,7 @@ public partial class gamedataObject {
 
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("failStep", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectStep[] failStep
+    public List<gamedataObjectStep> failStep
     {
         get
         {
@@ -477,7 +509,7 @@ public partial class gamedataObject {
 
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("nextStep", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
-    public gamedataObjectNextStep[] nextStep {
+    public List<gamedataObjectStep> nextStep {
         get {
             return this.nextStepField;
         }
@@ -488,7 +520,7 @@ public partial class gamedataObject {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("quest", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
-    public gamedataObjectQuest[] quest {
+    public List<gamedataObjectQuest> quest {
         get {
             return this.questField;
         }
@@ -499,7 +531,7 @@ public partial class gamedataObject {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("questStepChoice", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
-    public gamedataObjectQuestStepChoice[] questStepChoice {
+    public List<gamedataObjectQuestStepChoice> questStepChoice {
         get {
             return this.questStepChoiceField;
         }
@@ -510,7 +542,7 @@ public partial class gamedataObject {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("stat", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
-    public gamedataObjectStat[] stat {
+    public List<gamedataObjectStat> stat {
         get {
             return this.statField;
         }
@@ -521,7 +553,7 @@ public partial class gamedataObject {
 
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("xpStat", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectStat[] xpStat
+    public List<gamedataObjectStat> xpStat
     {
         get
         {
@@ -534,7 +566,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("henchman", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
-    public gamedataObjectHenchman[] henchman {
+    public List<gamedataObjectHenchman> henchman {
         get {
             return this.henchmanField;
         }
@@ -545,7 +577,7 @@ public partial class gamedataObject {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("firstStep", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
-    public gamedataObjectFirstStep[] firstStep {
+    public List<gamedataObjectStep> firstStep {
         get {
             return this.firstStepField;
         }
@@ -556,7 +588,7 @@ public partial class gamedataObject {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("itemType", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
-    public gamedataObjectItemType[] itemType {
+    public List<gamedataObjectItemType> itemType {
         get {
             return this.itemTypeField;
         }
@@ -567,7 +599,7 @@ public partial class gamedataObject {
 
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("subLocationOf", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectLocation[] subLocationOf
+    public List<gamedataObjectLocation> subLocationOf
     {
         get
         {
@@ -580,7 +612,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("requiredLocation", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectLocation[] requiredLocation
+    public List<gamedataObjectLocation> requiredLocation
     {
         get
         {
@@ -593,8 +625,8 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("startingLocation", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectLocation[] startingLocation
-    {
+    public List<gamedataObjectLocation> startingLocation
+        {
         get
         {
             return this.startingLocationField;
@@ -606,7 +638,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("associatedLocation", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectAssociatedLocation[] associatedLocation
+    public List<gamedataObjectLocation> associatedLocation
     {
         get
         {
@@ -619,7 +651,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("unlockLocation", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectUnlockLocation[] unlockLocation
+    public List<gamedataObjectLocation> unlockLocation
     {
         get
         {
@@ -632,7 +664,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("moveToLocation", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectMoveToLocation[] moveToLocation
+    public List<gamedataObjectLocation> moveToLocation
     {
         get
         {
@@ -645,7 +677,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("associatedNPC", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectAssociatedNPC[] associatedNPC
+    public List<gamedataObjectNPC> associatedNPC
     {
         get
         {
@@ -658,7 +690,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("startingQuest", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectStartingQuest[] startingQuest
+    public List<gamedataObjectQuest> startingQuest
     {
         get
         {
@@ -671,7 +703,7 @@ public partial class gamedataObject {
     }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("statGroup", Form = System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable = true)]
-    public gamedataObjectStatGroup[] statGroup
+    public List<gamedataObjectStatGroup> statGroup
     {
         get
         {
@@ -695,14 +727,27 @@ public partial class gamedataObject {
 }
 
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-public partial class objectReference
+public class objectReference: System.Object
 {
+    public override bool Equals( System.Object rhs)
+    {
+        if (rhs == null)
+            return false;
+        objectReference rhsOR = rhs as objectReference;
+        if (rhsOR == null)
+            return false;
+        return (className.Equals(rhsOR.className) && Value.Equals(rhsOR.Value));
+    }
+    public override int GetHashCode()
+    {
+        return Value.GetHashCode();
+    }
     private readonly string className;
     protected objectReference(string cn)
     {
         className = cn;
     }
-    
+
     private string valueField;
 
     /// <remarks/>
@@ -739,6 +784,8 @@ public partial class objectReference
     {
         get
         {
+            if (valueField == null)
+                return "";
             return this.valueField;
         }
         set
@@ -751,8 +798,7 @@ public partial class gamedataObjectStartingCharacterInfo: objectReference
 {
     public gamedataObjectStartingCharacterInfo(): base("StartingCharacterInfoData")
     {
-    }
-}
+    }}
 
 public partial class gamedataObjectItem : objectReference
 {
@@ -769,12 +815,6 @@ public partial class gamedataObjectStep: objectReference {
     }
 }
 
-public partial class gamedataObjectNextStep: objectReference {
-
-    public gamedataObjectNextStep() : base("QuestStepData")
-    {
-    }
-}
 public partial class gamedataObjectQuest : objectReference
 {
 
@@ -805,13 +845,6 @@ public partial class gamedataObjectHenchman : objectReference
     {
     }
 } 
-public partial class gamedataObjectFirstStep : objectReference
-{
-
-    public gamedataObjectFirstStep() : base("QuestStepData")
-    {
-    }
-}
 public partial class gamedataObjectItemType : objectReference
 {
 
@@ -826,38 +859,10 @@ public partial class gamedataObjectLocation : objectReference
     {
     }
 }
-public partial class gamedataObjectAssociatedLocation : objectReference
+public partial class gamedataObjectNPC : objectReference
 {
 
-    public gamedataObjectAssociatedLocation() : base("LocationData")
-    {
-    }
-}
-public partial class gamedataObjectUnlockLocation : objectReference
-{
-
-    public gamedataObjectUnlockLocation() : base("LocationData")
-    {
-    }
-}
-public partial class gamedataObjectMoveToLocation : objectReference
-{
-
-    public gamedataObjectMoveToLocation() : base("LocationData")
-    {
-    }
-}
-public partial class gamedataObjectAssociatedNPC : objectReference
-{
-
-    public gamedataObjectAssociatedNPC() : base("NPCData")
-    {
-    }
-}
-public partial class gamedataObjectStartingQuest : objectReference
-{
-
-    public gamedataObjectStartingQuest() : base("QuestData")
+    public gamedataObjectNPC() : base("NPCData")
     {
     }
 }
