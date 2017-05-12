@@ -202,7 +202,7 @@ namespace EvilWindowsEditor
                     elementsByType[gameObject.@class].Add(gameObject);
                 }
                 GameTree.Clear();
-                var elementList = new List<string> { "ItemTypeData", "ItemData", "StatData", "QuestData", "StatGroupData", "HenchmanData", "LocationData", "NPCData", "StartingCharacterInfoData" };
+                var elementList = new List<string> { "ItemTypeData", "ItemData", "StatData", "QuestData", "StatGroupData", "HenchmanData", "LocationData", "NPCData", "StartingCharacterInfoData", "IntegerConstantData", "StringConstantData" };
                 foreach (String elementClass in elementList)
                 {
                     int substringOffset = elementClass.LastIndexOf("Data");
@@ -709,6 +709,31 @@ namespace EvilWindowsEditor
             }
         }
 
+        public bool stringValueVisible
+        {
+            get
+            {
+                if (gameDataObj == null) { return false; }
+                if (gameDataObj.@class.Equals("StringConstantData"))
+                { return true; }
+                else
+                { return false; }
+            }
+        }
+        public bool valueVisible
+        {
+            get
+            {
+                if (gameDataObj == null) { return false; }
+                if (gameDataObj.@class.Equals("IntegerConstantData"))
+                { return true; }
+                else
+                { return false; }
+            }
+        }
+        public int value { get { if (gameDataObj == null) { return 0; } else return gameDataObj.value; } set { if (gameDataObj != null) gameDataObj.value = value; } }
+
+        public string stringValue { get { if (gameDataObj == null) { return ""; } else return gameDataObj.stringValue; } set { if (gameDataObj != null) gameDataObj.stringValue = value; } }
         public bool iconVisible
         {
             get
@@ -739,7 +764,11 @@ namespace EvilWindowsEditor
                 if (gameDataObj == null)
                 { return false; }
                 else
-                { if (gameDataObj.@class.Equals("StartingCharacterInfoData")) { return false; } return true; }
+                {
+                    if (gameDataObj.@class.Equals("StartingCharacterInfoData")|| gameDataObj.@class.Equals("IntegerConstantData")|| gameDataObj.@class.Equals("StringConstantData"))
+                    { return false; }
+                    return true;
+                }
             }
         }
         public bool? equippable

@@ -149,7 +149,8 @@ namespace EvilWindowsEditor
             //Create the merge tree here.
             _mergeTree = new ObservableCollection<MergeTreeItem>();
             MergeTree.Clear();
-            var elementList = new List<string> { "ItemTypeData", "ItemData", "StatData", "QuestData", "StatGroupData", "HenchmanData", "LocationData", "NPCData", "StartingCharacterInfoData" };
+            var elementList = new List<string> { "ItemTypeData", "ItemData", "StatData", "QuestData", "StatGroupData",
+                "HenchmanData", "LocationData", "NPCData", "StartingCharacterInfoData", "IntegerConstantData", "StringConstantData" };
             foreach (String elementClass in elementList)
             {
                 int substringOffset = elementClass.LastIndexOf("Data");

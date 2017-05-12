@@ -49,6 +49,8 @@
                     <MenuItem Header="Location" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateLocation"/>
                     <MenuItem Header="NPC" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateNPC"/>
                     <MenuItem Header="Startup Data" IsEnabled="{Binding canCreateStartingCharacterInfo, Mode=OneWay}" Click="MenuItem_CreateStartingCharacterInfo"/>
+                    <MenuItem Header="Integer Constant" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateIntegerConstant"/>
+                    <MenuItem Header="String Constant" IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_CreateStringConstant"/>
                 </MenuItem>
                 <MenuItem Header="_Sort">
                     <MenuItem Header="_SortQuestsByRequiredStat..." IsEnabled="{Binding PostLoad, Mode=OneWay}" Click="MenuItem_FindQuestByStat"/>
@@ -80,6 +82,14 @@
                         <StackPanel Orientation="Horizontal" Visibility="{Binding nameVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
                             <Label>Name:</Label>
                             <TextBox Width="500" Text="{Binding name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding valueVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>Value:</Label>
+                            <TextBox Width="500" Text="{Binding value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding stringValueVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>String:</Label>
+                            <TextBox Width="500" Text="{Binding stringValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                         </StackPanel>
                         <DockPanel  Visibility="{Binding nameVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
                             <Label DockPanel.Dock="Left">Comment:</Label>

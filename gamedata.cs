@@ -75,6 +75,7 @@ public partial class gamedataObject {
     
     private int valueField=0;
     private int statTargetField=0;
+    private string stringValueField = "";
     private string alternateBackgroundField="";
 
     private string deletedField; //Effectively a boolean
@@ -185,6 +186,19 @@ public partial class gamedataObject {
         }
     }
 
+    /// <remarks/>
+    [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+    public string stringValue
+    {
+        get
+        {
+            return this.stringValueField;
+        }
+        set
+        {
+            this.stringValueField = value;
+        }
+    }
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute(Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
     public string alternateBackground

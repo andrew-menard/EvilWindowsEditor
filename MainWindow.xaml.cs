@@ -234,6 +234,14 @@ namespace EvilWindowsEditor
         {
             GameDataViewObject.addNewObject("StartingCharacterInfo");
         }
+        private void MenuItem_CreateStringConstant(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewObject("StringConstant");
+        }
+        private void MenuItem_CreateIntegerConstant(object sender, RoutedEventArgs e)
+        {
+            GameDataViewObject.addNewObject("IntegerConstant");
+        }
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             GameDataViewObject.deleteSelectedObject();
