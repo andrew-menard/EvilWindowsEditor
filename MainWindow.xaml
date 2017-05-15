@@ -76,7 +76,13 @@
                     <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                         <Label Visibility="{Binding PreLoad, Mode=OneWay, Converter={StaticResource BoolToVis} }" Content="Load a game data file"></Label>
                         <Label Visibility="{Binding pickNewObjectVisible, Mode=OneWay, Converter={StaticResource BoolToVis} }" Content="Pick a data item"></Label>
-                        <Button HorizontalAlignment="Right" Click="DeleteButton_Click" ToolTip="{Binding deleteObjectButtonTooltip, Mode=OneWay}" Visibility="{Binding deleteObjectButtonVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                        <Button HorizontalAlignment="Right" Click="SortOrderUpButton_Click" Visibility="{Binding sortOrderButtonsVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>Move this up in the sort order</Label>
+                        </Button>
+                        <Button HorizontalAlignment="Right" Click="SortOrderDownButton_Click" Visibility="{Binding sortOrderButtonsVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
+                            <Label>Move this down in the sort order</Label>
+                        </Button>
+                        <Button HorizontalAlignment="Right" Click="DeleteButton_Click" Visibility="{Binding deleteObjectButtonVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">
                             <Label>Delete this Item</Label>
                         </Button>
                         <StackPanel Orientation="Horizontal" Visibility="{Binding nameVisible,Mode=OneWay, Converter={StaticResource BoolToVis}}">

@@ -422,13 +422,11 @@ public partial class gamedataObject: INotifyPropertyChanged
     public string itemID
 	{
         get { if (item == null || item.Count==0 || item[0].Value == null) return ""; return item[0].Value;}
-		set { 
-            if (item == null)
-			{
-                item = new List<gamedataObjectItem>();
-				item.Add(new gamedataObjectItem());
-			}
-			item[0].Value = value; }
+		set
+        {
+            item = new List<gamedataObjectItem>();
+            item.Add(new gamedataObjectItem() { Value = value });
+        }
     }
     [XmlIgnore]
     public string startingCharacterInfoID
@@ -436,12 +434,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (startingCharacterInfo == null || startingCharacterInfo.Count == 0 || startingCharacterInfo[0].Value==null) return ""; return startingCharacterInfo[0].Value; }
         set
         {
-            if (startingCharacterInfo == null)
-            {
                 startingCharacterInfo = new List<gamedataObjectStartingCharacterInfo>();
-                startingCharacterInfo.Add(new gamedataObjectStartingCharacterInfo());
-            }
-            startingCharacterInfo[0].Value = value;
+                startingCharacterInfo.Add(new gamedataObjectStartingCharacterInfo() { Value = value });
         }
     }
     [XmlIgnore]
@@ -450,12 +444,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (henchman == null || henchman.Count == 0 || henchman[0].Value==null) return ""; return henchman[0].Value; }
         set
         {
-            if (henchman == null)
-            {
                 henchman = new List<gamedataObjectHenchman>();
-                henchman.Add(new gamedataObjectHenchman());
-            }
-            henchman[0].Value = value;
+                henchman.Add(new gamedataObjectHenchman() { Value = value });
         }
     }
     [XmlIgnore]
@@ -464,12 +454,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (stat == null || stat.Count == 0 || stat[0].Value==null) return ""; return stat[0].Value; }
         set
         {
-            if (stat == null)
-            {
                 stat = new List<gamedataObjectStat>();
-                stat.Add(new gamedataObjectStat());
-            }
-            stat[0].Value = value;
+                stat.Add(new gamedataObjectStat() { Value = value });
         }
     }
     [XmlIgnore]
@@ -478,12 +464,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (xpStat == null || xpStat.Count == 0 || xpStat[0].Value == null) return ""; return xpStat[0].Value; }
         set
         {
-            if (xpStat == null)
-            {
                 xpStat = new List<gamedataObjectStat>();
-                xpStat.Add(new gamedataObjectStat());
-            }
-            xpStat[0].Value = value;
+                xpStat.Add(new gamedataObjectStat() { Value = value });
         }
     }
     [XmlIgnore]
@@ -492,12 +474,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (subLocationOf == null || subLocationOf.Count == 0 || subLocationOf[0].Value == null) return ""; return subLocationOf[0].Value; }
         set
         {
-            if (subLocationOf == null)
-            {
                 subLocationOf = new List<gamedataObjectLocation>();
-                subLocationOf[0] = new gamedataObjectLocation();
-            }
-            subLocationOf[0].Value = value;
+                subLocationOf.Add(new gamedataObjectLocation() { Value = value });
         }
     }
     [XmlIgnore]
@@ -506,12 +484,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (requiredLocation == null || requiredLocation.Count == 0 || requiredLocation[0].Value==null) return ""; return requiredLocation[0].Value; }
         set
         {
-            if (requiredLocation == null)
-            {
                 requiredLocation = new List<gamedataObjectLocation>();
-                requiredLocation.Add(new gamedataObjectLocation());
-            }
-            requiredLocation[0].Value = value;
+                requiredLocation.Add(new gamedataObjectLocation() { Value = value });
         }
     }
     [XmlIgnore]
@@ -520,12 +494,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (questStepChoice == null || questStepChoice.Count == 0 || questStepChoice[0].Value==null) return ""; return questStepChoice[0].Value; }
         set
         {
-            if (questStepChoice == null)
-            {
                 questStepChoice = new List<gamedataObjectQuestStepChoice>();
-                questStepChoice.Add(new gamedataObjectQuestStepChoice());
-            }
-            questStepChoice[0].Value = value;
+                questStepChoice.Add(new gamedataObjectQuestStepChoice() { Value = value });
         }
     }
     [XmlIgnore]
@@ -534,12 +504,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (quest == null || quest.Count == 0 || quest[0].Value == null) return ""; return quest[0].Value; }
         set
         {
-            if (quest == null)
-            {
                 quest = new List<gamedataObjectQuest>();
-                quest.Add(new gamedataObjectQuest());
-            }
-            quest[0].Value = value;
+                quest.Add(new gamedataObjectQuest() { Value = value });
         }
     }
     [XmlIgnore]
@@ -548,12 +514,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (step == null || step.Count == 0 || step[0].Value==null) return ""; return step[0].Value; }
         set
         {
-            if (step == null)
-            {
                 step = new List<gamedataObjectStep>();
-                step.Add(new gamedataObjectStep());
-            }
-            step[0].Value = value;
+                step.Add(new gamedataObjectStep() { Value = value });
         }
     }
     [XmlIgnore]
@@ -564,12 +526,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         {
             if (value == null)  //When you repopulate the step pulldowns in the grid view because you've changed quests, all the choices suddenly point to something not valid, so they are force-changed to nulls!  This isn't good...
                 return;
-            if (failStep == null)
-            {
                 failStep = new List<gamedataObjectStep>();
-                failStep.Add(new gamedataObjectStep());
-            }
-            failStep[0].Value = value;
+                failStep.Add(new gamedataObjectStep() { Value = value });
         }
     }
     [XmlIgnore]
@@ -578,12 +536,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (firstStep == null || firstStep.Count == 0 || firstStep[0].Value==null) return ""; return firstStep[0].Value; }
         set
         {
-            if (firstStep == null)
-            {
                 firstStep = new List<gamedataObjectStep>();
-                firstStep.Add(new gamedataObjectStep());
-            }
-            firstStep[0].Value = value;
+                firstStep.Add(new gamedataObjectStep() { Value = value });
         }
     }
     [XmlIgnore]
@@ -594,12 +548,8 @@ public partial class gamedataObject: INotifyPropertyChanged
 		{
             if (value == null)  //When you repopulate the step pulldowns in the grid view because you've changed quests, all the choices suddenly point to something not valid, so they are force-changed to nulls!  This isn't good...
                 return;
-			if (nextStep == null)
-			{
 				nextStep = new List<gamedataObjectStep>();
-				nextStep.Add(new gamedataObjectStep());
-			}
-			nextStep[0].Value = value;
+				nextStep.Add(new gamedataObjectStep() { Value = value });
 			NotifyPropertyChanged("nextStepID");
 		}
     }
@@ -609,12 +559,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (itemType == null || itemType.Count == 0 || itemType[0].Value==null) return ""; return itemType[0].Value; }
         set
         {
-            if (itemType == null)
-            {
                 itemType = new List<gamedataObjectItemType>();
-                itemType.Add(new gamedataObjectItemType());
-            }
-            itemType[0].Value = value;
+                itemType.Add(new gamedataObjectItemType() { Value = value });
             NotifyPropertyChanged("itemTypeID");
         }
     }
@@ -624,12 +570,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (startingQuest == null || startingQuest.Count == 0 || startingQuest[0].Value==null) return ""; return startingQuest[0].Value; }
         set
         {
-            if (startingQuest == null)
-            {
                 startingQuest = new List<gamedataObjectQuest>();
-                startingQuest.Add(new gamedataObjectQuest());
-            }
-            startingQuest[0].Value = value;
+                startingQuest.Add(new gamedataObjectQuest() { Value = value });
             NotifyPropertyChanged("startingQuestID");
         }
     }
@@ -639,12 +581,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (statGroup == null || statGroup.Count == 0 || statGroup[0].Value== null) return ""; return statGroup[0].Value; }
         set
         {
-            if (statGroup == null)
-            {
                 statGroup = new List<gamedataObjectStatGroup>();
-                statGroup.Add(new gamedataObjectStatGroup());
-            }
-            statGroup[0].Value = value;
+                statGroup.Add(new gamedataObjectStatGroup() { Value = value });
             NotifyPropertyChanged("statGroupID");
         }
     }
@@ -654,12 +592,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (startingLocation == null || startingLocation.Count == 0 || startingLocation[0].Value==null) return ""; return startingLocation[0].Value; }
         set
         {
-            if (startingLocation == null)
-            {
                 startingLocation = new List<gamedataObjectLocation>();
-                startingLocation.Add(new gamedataObjectLocation());
-            }
-            startingLocation[0].Value = value;
+                startingLocation.Add(new gamedataObjectLocation() { Value = value });
             NotifyPropertyChanged("startingLocationID");
         }
     }
@@ -669,12 +603,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (associatedLocation == null || associatedLocation.Count == 0 || associatedLocation[0].Value==null) return ""; return associatedLocation[0].Value; }
         set
         {
-            if (associatedLocation == null)
-            {
                 associatedLocation = new List<gamedataObjectLocation>();
-                associatedLocation.Add(new gamedataObjectLocation());
-            }
-            associatedLocation[0].Value = value;
+                associatedLocation.Add(new gamedataObjectLocation() { Value = value });
             NotifyPropertyChanged("associatedLocationID");
         }
     }
@@ -684,12 +614,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (unlockLocation == null || unlockLocation.Count == 0 || unlockLocation[0].Value==null) return ""; return unlockLocation[0].Value; }
         set
         {
-            if (unlockLocation == null)
-            {
-                unlockLocation = new List<gamedataObjectLocation>();
-                unlockLocation.Add(new gamedataObjectLocation());
-            }
-            unlockLocation[0].Value = value;
+            unlockLocation = new List<gamedataObjectLocation>();
+            unlockLocation.Add(new gamedataObjectLocation() { Value = value });
             NotifyPropertyChanged("unlockLocationID");
         }
     }
@@ -699,13 +625,9 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (moveToLocation == null || moveToLocation.Count == 0 || moveToLocation[0].Value==null) return ""; return moveToLocation[0].Value; }
         set
         {
-            if (moveToLocation == null)
-            {
-                moveToLocation = new List<gamedataObjectLocation>();
-                moveToLocation.Add(new gamedataObjectLocation());
-            }
-            moveToLocation[0].Value = value;
-            NotifyPropertyChanged("moveToLocationID");
+            moveToLocation = new List<gamedataObjectLocation>();
+            moveToLocation.Add(new gamedataObjectLocation() { Value = value });
+            NotifyPropertyChanged("moveToLocation");
         }
     }
     [XmlIgnore]
@@ -714,12 +636,8 @@ public partial class gamedataObject: INotifyPropertyChanged
         get { if (associatedNPC == null || associatedNPC.Count == 0 || associatedNPC[0].Value==null) return ""; return associatedNPC[0].Value; }
         set
         {
-            if (associatedNPC == null)
-            {
                 associatedNPC = new List<gamedataObjectNPC>();
-                associatedNPC.Add(new gamedataObjectNPC());
-            }
-            associatedNPC[0].Value = value;
+                associatedNPC.Add(new gamedataObjectNPC() { Value = value });
             NotifyPropertyChanged("associatedNPCID");
         }
     }

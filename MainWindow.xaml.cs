@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -378,7 +379,55 @@ namespace EvilWindowsEditor
                 GameDataViewObject.deleteObject(selected as gamedataObject);
             }
         }
+        private void SortOrderUpButton_Click(object sender, RoutedEventArgs e)
+        {
 
+            gamedataObject selected = GameDataViewObject.gameData;
+            if (selected != null)
+            {
+                //Find the largest sort index less than the selected one, that's who we want to swap numbers with.
+                int sortIndex = 0;
+                gamedataObject objectToSwap = null;
+                foreach (gamedataObject iterObject in GameDataViewObject.root.Items.Where<gamedataObject>(iter => iter.@class.Equals(selected.@class) && iter.deleted == "False"))
+                {
+                    if (iterObject.sortOrder > sortIndex && iterObject.sortOrder < selected.sortOrder)
+                    {
+                        objectToSwap = iterObject;
+                        sortIndex = iterObject.sortOrder;
+                    }
+                }
+                if (objectToSwap != null) //If it is still null, there must be nothing above the selected in the list
+                {
+                    objectToSwap.sortOrder = selected.sortOrder;
+                    selected.sortOrder = sortIndex;
+                }
+            }
+            GameDataViewObject.reSortGameTree();
+        }
+        private void SortOrderDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            gamedataObject selected = GameDataViewObject.gameData;
+            if (selected != null)
+            {
+                //Find the largest sort index less than the selected one, that's who we want to swap numbers with.
+                int sortIndex = Int32.MaxValue;
+                gamedataObject objectToSwap = null;
+                foreach (gamedataObject iterObject in GameDataViewObject.root.Items.Where<gamedataObject>(iter => iter.@class.Equals(selected.@class) && iter.deleted == "False"))
+                {
+                    if (iterObject.sortOrder < sortIndex && iterObject.sortOrder > selected.sortOrder)
+                    {
+                        objectToSwap = iterObject;
+                        sortIndex = iterObject.sortOrder;
+                    }
+                }
+                if (objectToSwap != null) //If it is still null, there must be nothing above the selected in the list
+                {
+                    objectToSwap.sortOrder = selected.sortOrder;
+                    selected.sortOrder = sortIndex;
+                }
+            }
+            GameDataViewObject.reSortGameTree();
+        }
         private void MoveSelectedQuestStepChoiceUpButton_Click(object sender, RoutedEventArgs e)
         {
             DataGrid dgr = (sender as Button).FindName("QuestStepChoiceGridRoot") as DataGrid;

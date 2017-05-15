@@ -17,6 +17,15 @@ namespace EvilWindowsEditor
         {
             Children = new ObservableCollection<GameTreeItem>();
         }
+        public int SortOrderSorter
+        {
+            get
+            {
+                if (ObjectRef == null)
+                    return 0;
+                return ObjectRef.sortOrder;
+            }
+        }
         public string MinValueSorter
         {
             get
@@ -150,6 +159,23 @@ namespace EvilWindowsEditor
                 foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("ItemTypeData") && iter.deleted == "False"))
                 {
                     itemTypes.Add(gameObject);
+                    //Sort order was not originally set (and might get confused in a merge); this enforces unique sort order if none existed.
+                    int maxSortOrder = 0;
+                    foreach (gamedataObject iterObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("ItemTypeData") && iter.deleted == "False"))
+                    {
+                        if (iterObject.sortOrder>=maxSortOrder)
+                        {
+                            maxSortOrder = iterObject.sortOrder + 1;
+                        }
+                        if (iterObject != gameObject && iterObject.sortOrder==gameObject.sortOrder)
+                        {
+                            iterObject.sortOrder = 0;
+                        }
+                    }
+                    if (gameObject.sortOrder==0)
+                    {
+                        gameObject.sortOrder = maxSortOrder;
+                    }
                 }
                 stats.Clear();
                 gamedataObject nullStat = new gamedataObject();
@@ -167,7 +193,23 @@ namespace EvilWindowsEditor
                 statGroups.Add(nullStatGroup); //Empty value so you can "unselect" things in the combo boxes
                 foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StatGroupData") && iter.deleted == "False"))
                 {
-                    statGroups.Add(gameObject);
+                    //Sort order was not originally set (and might get confused in a merge); this enforces unique sort order if none existed.
+                    int maxSortOrder = 0;
+                    foreach (gamedataObject iterObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StatGroupData") && iter.deleted == "False"))
+                    {
+                        if (iterObject.sortOrder >= maxSortOrder)
+                        {
+                            maxSortOrder = iterObject.sortOrder + 1;
+                        }
+                        if (iterObject!=gameObject && iterObject.sortOrder == gameObject.sortOrder)
+                        {
+                            iterObject.sortOrder = 0;
+                        }
+                    }
+                    if (gameObject.sortOrder == 0)
+                    {
+                        gameObject.sortOrder = maxSortOrder;
+                    }
                 }
                 quests.Clear();
                 foreach (gamedataObject gameObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("QuestData") && iter.deleted == "False"))
@@ -257,6 +299,7 @@ namespace EvilWindowsEditor
                     }
                     GameTree.Add(classNode);
                 }
+                reSortGameTree();
                 PostLoad = true;
                 NotifyPropertyChanged("gameTree");
             }
@@ -404,6 +447,20 @@ namespace EvilWindowsEditor
                     }
                 }
 
+            }
+        }
+        public void reSortGameTree()
+        {
+            foreach (GameTreeItem iter in GameTree)
+            {
+                if (iter.Name.Equals("ItemType") || iter.Name.Equals("StatGroup"))
+                {
+                    List<GameTreeItem> temp = iter.Children.OrderBy(g => g.SortOrderSorter).ToList<GameTreeItem>();
+                    ObservableCollection<GameTreeItem> sortedList = new ObservableCollection<GameTreeItem>();
+                    temp.ForEach(x => sortedList.Add(x));
+                    iter.Children = sortedList;
+                    iter.NotifyPropertyChanged("Children");
+                }
             }
         }
         public bool questStepChoiceDataVisible
@@ -949,6 +1006,17 @@ namespace EvilWindowsEditor
                 }
             }
         }
+        public bool sortOrderButtonsVisible
+        {
+            get
+            {
+                if (gameDataObj == null) { return false; }
+                if (gameDataObj.@class.Equals("ItemTypeData")||gameDataObj.@class.Equals("StatGroupData"))
+                { return true; }
+                else
+                { return false; }
+            }
+        }
         public bool equippableVisible
         {
             get
@@ -1401,7 +1469,15 @@ namespace EvilWindowsEditor
                         headernode.Children.Add(statGroupNode);
                     }
                 }
-
+                int maxSortOrder = 0;
+                foreach (gamedataObject iterObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("StatGroupData") && iter.deleted == "False"))
+                {
+                    if (iterObject.sortOrder >= maxSortOrder)
+                    {
+                        maxSortOrder = iterObject.sortOrder + 1;
+                    }
+                }
+                newObj.sortOrder = maxSortOrder;
             }
             if (objectType.Equals("Quest"))
             {
@@ -1414,6 +1490,18 @@ namespace EvilWindowsEditor
             if (objectType.Equals("StartingCharacterInfo"))
             {
                 NotifyPropertyChanged("canCreateStartingCharacterInfo");
+            }
+            if (objectType.Equals("ItemType"))
+            {
+                int maxSortOrder = 0;
+                foreach (gamedataObject iterObject in root.Items.Where<gamedataObject>(iter => iter.@class.Equals("ItemTypeData") && iter.deleted == "False"))
+                {
+                    if (iterObject.sortOrder >= maxSortOrder)
+                    {
+                        maxSortOrder = iterObject.sortOrder + 1;
+                    }
+                }
+                newObj.sortOrder = maxSortOrder;
             }
             SelectNewObject(newObj, objectType);
         }
